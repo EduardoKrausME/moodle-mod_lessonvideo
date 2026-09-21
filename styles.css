@@ -1,0 +1,80 @@
+.videolesson-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.videolesson-player-wrap {
+    background: #000;
+    border-radius: .5rem;
+    overflow: hidden;
+    width: 100%;
+}
+
+.videolesson-video,
+.videolesson-provider-player,
+.videolesson-provider-player iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    border: 0;
+}
+
+.videolesson-video {
+    height: auto;
+}
+
+.videolesson-sidebar .sticky-top {
+    top: 1rem;
+}
+
+.videolesson-chapter-link.active {
+    font-weight: 600;
+}
+
+.videolesson-time {
+    font-variant-numeric: tabular-nums;
+    color: var(--bs-secondary-color, #6c757d);
+    margin-right: .35rem;
+}
+
+.videolesson-chapter-status {
+    font-size: .75rem;
+    white-space: nowrap;
+}
+
+.videolesson-image {
+    max-height: 36rem;
+    object-fit: contain;
+}
+
+.videolesson-activity-guidance {
+    border-left: .25rem solid var(--bs-info, #0dcaf0);
+    padding-left: 1rem;
+}
+
+.videolesson-report-table th,
+.videolesson-report-table td {
+    min-width: 9rem;
+}
+
+.videolesson-report-table th:first-child,
+.videolesson-report-table td:first-child {
+    min-width: 14rem;
+}
+
+@media (max-width: 991.98px) {
+    .videolesson-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .videolesson-sidebar {
+        order: -1;
+    }
+
+    .videolesson-sidebar .sticky-top {
+        position: static !important;
+    }
+}

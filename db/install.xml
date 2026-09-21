@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/videolesson/db" VERSION="20260920" COMMENT="XMLDB file for Video Lesson"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+    <TABLES>
+        <TABLE NAME="videolesson" COMMENT="Video Lesson activity settings">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="videosource" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="upload" SEQUENCE="false"/>
+                <FIELD NAME="videourl" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="resumeplayback" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="allowseek" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="maxplaybackrate" TYPE="number" LENGTH="4" DECIMALS="2" NOTNULL="true" DEFAULT="0"
+                       SEQUENCE="false"/>
+                <FIELD NAME="chapterpercent" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="90" SEQUENCE="false"/>
+                <FIELD NAME="completionmode" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="required"
+                       SEQUENCE="false"/>
+                <FIELD NAME="completionchapters" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="completionpercent" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="100" SEQUENCE="false"/>
+                <FIELD NAME="grade" TYPE="number" LENGTH="10" DECIMALS="5" NOTNULL="true" DEFAULT="100"
+                       SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="course" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="course-source" UNIQUE="false" FIELDS="course,videosource"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="videolesson_chapters" COMMENT="Ordered chapters on the video timeline">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="videolessonid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="starttime" TYPE="number" LENGTH="12" DECIMALS="3" NOTNULL="true" DEFAULT="0"
+                       SEQUENCE="false"/>
+                <FIELD NAME="required" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="locknext" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="lesson" TYPE="foreign" FIELDS="videolessonid" REFTABLE="videolesson" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="lesson-order" UNIQUE="false" FIELDS="videolessonid,sortorder"/>
+                <INDEX NAME="lesson-time" UNIQUE="false" FIELDS="videolessonid,starttime"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="videolesson_items" COMMENT="Complementary content attached to chapters">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="text" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="content" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="url" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="required" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="chapter" TYPE="foreign" FIELDS="chapterid" REFTABLE="videolesson_chapters" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="chapter-order" UNIQUE="false" FIELDS="chapterid,sortorder"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="videolesson_progress" COMMENT="Consolidated progress per user and activity">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="videolessonid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="duration" TYPE="number" LENGTH="12" DECIMALS="3" NOTNULL="true" DEFAULT="0"
+                       SEQUENCE="false"/>
+                <FIELD NAME="lastposition" TYPE="number" LENGTH="12" DECIMALS="3" NOTNULL="true" DEFAULT="0"
+                       SEQUENCE="false"/>
+                <FIELD NAME="totalwatchtime" TYPE="number" LENGTH="14" DECIMALS="3" NOTNULL="true" DEFAULT="0"
+                       SEQUENCE="false"/>
+                <FIELD NAME="watchedsegments" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="percent" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="true" DEFAULT="0"
+                       SEQUENCE="false"/>
+                <FIELD NAME="completed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="lesson" TYPE="foreign" FIELDS="videolessonid" REFTABLE="videolesson" REFFIELDS="id"/>
+                <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="lesson-user" UNIQUE="true" FIELDS="videolessonid,userid"/>
+                <INDEX NAME="lesson-completed" UNIQUE="false" FIELDS="videolessonid,completed"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="videolesson_chprogress" COMMENT="Progress per chapter and user">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="watchedseconds" TYPE="number" LENGTH="12" DECIMALS="3" NOTNULL="true" DEFAULT="0"
+                       SEQUENCE="false"/>
+                <FIELD NAME="percent" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="true" DEFAULT="0"
+                       SEQUENCE="false"/>
+                <FIELD NAME="completed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="chapter" TYPE="foreign" FIELDS="chapterid" REFTABLE="videolesson_chapters" REFFIELDS="id"/>
+                <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="chapter-user" UNIQUE="true" FIELDS="chapterid,userid"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="videolesson_itemprogress" COMMENT="Completion and response state for chapter items">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="completed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="response" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="item" TYPE="foreign" FIELDS="itemid" REFTABLE="videolesson_items" REFFIELDS="id"/>
+                <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="item-user" UNIQUE="true" FIELDS="itemid,userid"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="videolesson_sessions" COMMENT="Playback sessions used to validate heartbeats">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="videolessonid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="sessionkey" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="sequence" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="lastposition" TYPE="number" LENGTH="12" DECIMALS="3" NOTNULL="true" DEFAULT="0"
+                       SEQUENCE="false"/>
+                <FIELD NAME="lastclienttime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="lastheartbeat" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="lesson" TYPE="foreign" FIELDS="videolessonid" REFTABLE="videolesson" REFFIELDS="id"/>
+                <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="session-identity" UNIQUE="true" FIELDS="videolessonid,userid,sessionkey"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>
