@@ -17,7 +17,7 @@
 /**
  * Upgrade steps for Video Lesson.
  *
- * @package   mod_videolesson
+ * @package   mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,6 +31,6 @@
  * @param int $oldversion Previously installed plugin version.
  * @return bool Always true when all upgrade steps succeed.
  */
-function xmldb_videolesson_upgrade(int $oldversion): bool {
+function xmldb_lessonvideo_upgrade(int $oldversion): bool {
     return true;
 }

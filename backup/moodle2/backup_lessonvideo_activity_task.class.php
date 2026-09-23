@@ -17,16 +17,16 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/videolesson/backup/moodle2/backup_videolesson_stepslib.php');
+require_once($CFG->dirroot . '/mod/lessonvideo/backup/moodle2/backup_lessonvideo_stepslib.php');
 
 /**
  * Backup task for Video Lesson.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_videolesson_activity_task extends backup_activity_task {
+class backup_lessonvideo_activity_task extends backup_activity_task {
 
     /**
      * Method define_my_settings.
@@ -42,7 +42,7 @@ class backup_videolesson_activity_task extends backup_activity_task {
      * @return void Return value.
      */
     protected function define_my_steps(): void {
-        $this->add_step(new backup_videolesson_activity_structure_step('videolesson_structure', 'videolesson.xml'));
+        $this->add_step(new backup_lessonvideo_activity_structure_step('lessonvideo_structure', 'lessonvideo.xml'));
     }
 
     /**
@@ -53,9 +53,9 @@ class backup_videolesson_activity_task extends backup_activity_task {
      */
     public static function encode_content_links($content): string {
         global $CFG;
-        $base = preg_quote($CFG->wwwroot . '/mod/videolesson/index.php?id=', '#');
+        $base = preg_quote($CFG->wwwroot . '/mod/lessonvideo/index.php?id=', '#');
         $content = preg_replace("#({$base})([0-9]+)#", '$@VIDELESSONINDEX*$2@$', $content);
-        $base = preg_quote($CFG->wwwroot . '/mod/videolesson/view.php?id=', '#');
+        $base = preg_quote($CFG->wwwroot . '/mod/lessonvideo/view.php?id=', '#');
         return preg_replace("#({$base})([0-9]+)#", '$@VIDELESSONVIEWBYID*$2@$', $content);
     }
 }

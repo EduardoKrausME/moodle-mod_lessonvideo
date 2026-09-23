@@ -17,7 +17,7 @@
 /**
  * English strings for Video Lesson.
  *
- * @package   mod_videolesson
+ * @package   mod_lessonvideo
  * @copyright 2026 Eduardo Kraus
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -122,16 +122,16 @@ $string['optional'] = 'Optional';
 $string['overallprogress'] = 'Overall progress';
 $string['pluginadministration'] = 'Video Lesson administration';
 $string['pluginname'] = 'Video Lesson';
-$string['privacy:metadata:videolesson_chprogress'] = 'Stores progress for each chapter.';
-$string['privacy:metadata:videolesson_itemprogress'] = 'Stores completion and responses for complementary chapter content.';
-$string['privacy:metadata:videolesson_progress'] = 'Stores each student\'s overall playback progress in a Video Lesson.';
-$string['privacy:metadata:videolesson_progress:completed'] = 'Whether the lesson requirements are complete.';
-$string['privacy:metadata:videolesson_progress:lastposition'] = 'The last validated video position.';
-$string['privacy:metadata:videolesson_progress:percent'] = 'The calculated overall lesson percentage.';
-$string['privacy:metadata:videolesson_progress:totalwatchtime'] = 'The validated amount of watch time.';
-$string['privacy:metadata:videolesson_progress:userid'] = 'The user whose progress is stored.';
-$string['privacy:metadata:videolesson_progress:watchedsegments'] = 'The validated video intervals watched by the user.';
-$string['privacy:metadata:videolesson_sessions'] = 'Stores minimal playback session data used to validate video progress.';
+$string['privacy:metadata:lessonvideo_chprogress'] = 'Stores progress for each chapter.';
+$string['privacy:metadata:lessonvideo_itemprogress'] = 'Stores completion and responses for complementary chapter content.';
+$string['privacy:metadata:lessonvideo_progress'] = 'Stores each student\'s overall playback progress in a Video Lesson.';
+$string['privacy:metadata:lessonvideo_progress:completed'] = 'Whether the lesson requirements are complete.';
+$string['privacy:metadata:lessonvideo_progress:lastposition'] = 'The last validated video position.';
+$string['privacy:metadata:lessonvideo_progress:percent'] = 'The calculated overall lesson percentage.';
+$string['privacy:metadata:lessonvideo_progress:totalwatchtime'] = 'The validated amount of watch time.';
+$string['privacy:metadata:lessonvideo_progress:userid'] = 'The user whose progress is stored.';
+$string['privacy:metadata:lessonvideo_progress:watchedsegments'] = 'The validated video intervals watched by the user.';
+$string['privacy:metadata:lessonvideo_sessions'] = 'Stores minimal playback session data used to validate video progress.';
 $string['privacy:path'] = 'Video Lesson';
 $string['progressreset'] = 'Progress reset.';
 $string['progresssettings'] = 'Progress and completion';
@@ -159,12 +159,12 @@ $string['submitanswer'] = 'Save answer';
 $string['trackingerror'] = 'Video progress could not be saved. Playback will continue and the plugin will retry.';
 $string['videofile'] = 'Video file';
 $string['videofilerequired'] = 'Upload a video file for this lesson.';
-$string['videolesson:addinstance'] = 'Add a new Video Lesson';
-$string['videolesson:managechapters'] = 'Manage Video Lesson chapters and content';
-$string['videolesson:resetprogress'] = 'Reset Video Lesson progress';
-$string['videolesson:view'] = 'View Video Lesson';
-$string['videolesson:viewreport'] = 'View Video Lesson reports';
-$string['videolessonname'] = 'Video Lesson name';
+$string['lessonvideo:addinstance'] = 'Add a new Video Lesson';
+$string['lessonvideo:managechapters'] = 'Manage Video Lesson chapters and content';
+$string['lessonvideo:resetprogress'] = 'Reset Video Lesson progress';
+$string['lessonvideo:view'] = 'View Video Lesson';
+$string['lessonvideo:viewreport'] = 'View Video Lesson reports';
+$string['lessonvideoname'] = 'Video Lesson name';
 $string['videosettings'] = 'Video';
 $string['videosource'] = 'Video source';
 $string['videourl'] = 'Video URL';

@@ -17,11 +17,11 @@
 /**
  * Backup structure for Video Lesson.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_videolesson_activity_structure_step extends backup_activity_structure_step {
+class backup_lessonvideo_activity_structure_step extends backup_activity_structure_step {
     /**
      * Defines the activity XML tree.
      *
@@ -30,7 +30,7 @@ class backup_videolesson_activity_structure_step extends backup_activity_structu
     protected function define_structure(): backup_nested_element {
         $userinfo = $this->get_setting_value('userinfo');
 
-        $lesson = new backup_nested_element('videolesson', ['id'], [
+        $lesson = new backup_nested_element('lessonvideo', ['id'], [
             'course', 'name', 'intro', 'introformat', 'videosource', 'videourl', 'resumeplayback', 'allowseek',
             'maxplaybackrate', 'chapterpercent', 'completionmode', 'completionchapters', 'completionpercent', 'grade',
             'timecreated', 'timemodified',
@@ -68,21 +68,21 @@ class backup_videolesson_activity_structure_step extends backup_activity_structu
         $item->add_child($itemprogresses);
         $itemprogresses->add_child($itemprogress);
 
-        $lesson->set_source_table('videolesson', ['id' => backup::VAR_ACTIVITYID]);
-        $chapter->set_source_table('videolesson_chapters', ['videolessonid' => backup::VAR_PARENTID]);
-        $item->set_source_table('videolesson_items', ['chapterid' => backup::VAR_PARENTID]);
+        $lesson->set_source_table('lessonvideo', ['id' => backup::VAR_ACTIVITYID]);
+        $chapter->set_source_table('lessonvideo_chapters', ['lessonvideoid' => backup::VAR_PARENTID]);
+        $item->set_source_table('lessonvideo_items', ['chapterid' => backup::VAR_PARENTID]);
         if ($userinfo) {
-            $progress->set_source_table('videolesson_progress', ['videolessonid' => backup::VAR_PARENTID]);
-            $chapterprogress->set_source_table('videolesson_chprogress', ['chapterid' => backup::VAR_PARENTID]);
-            $itemprogress->set_source_table('videolesson_itemprogress', ['itemid' => backup::VAR_PARENTID]);
+            $progress->set_source_table('lessonvideo_progress', ['lessonvideoid' => backup::VAR_PARENTID]);
+            $chapterprogress->set_source_table('lessonvideo_chprogress', ['chapterid' => backup::VAR_PARENTID]);
+            $itemprogress->set_source_table('lessonvideo_itemprogress', ['itemid' => backup::VAR_PARENTID]);
             $progress->annotate_ids('user', 'userid');
             $chapterprogress->annotate_ids('user', 'userid');
             $itemprogress->annotate_ids('user', 'userid');
         }
 
-        $lesson->annotate_files('mod_videolesson', 'videofile', null);
-        $lesson->annotate_files('mod_videolesson', 'captions', null);
-        $item->annotate_files('mod_videolesson', 'itemfile', 'id');
+        $lesson->annotate_files('mod_lessonvideo', 'videofile', null);
+        $lesson->annotate_files('mod_lessonvideo', 'captions', null);
+        $item->annotate_files('mod_lessonvideo', 'itemfile', 'id');
         return $this->prepare_activity_structure($lesson);
     }
 }

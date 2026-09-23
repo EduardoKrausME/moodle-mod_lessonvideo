@@ -17,28 +17,28 @@
 /**
  * Student view for Video Lesson.
  *
- * @package   mod_videolesson
+ * @package   mod_lessonvideo
  * @copyright 2026 Eduardo Kraus
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use mod_videolesson\item_presenter;
-use mod_videolesson\player_config;
-use mod_videolesson\progress_manager;
-use mod_videolesson\timecode;
+use mod_lessonvideo\item_presenter;
+use mod_lessonvideo\player_config;
+use mod_lessonvideo\progress_manager;
+use mod_lessonvideo\timecode;
 
 require('../../config.php');
 
 $id = required_param('id', PARAM_INT);
-$cm = get_coursemodule_from_id('videolesson', $id, 0, false, MUST_EXIST);
+$cm = get_coursemodule_from_id('lessonvideo', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
-$activity = $DB->get_record('videolesson', ['id' => $cm->instance], '*', MUST_EXIST);
+$activity = $DB->get_record('lessonvideo', ['id' => $cm->instance], '*', MUST_EXIST);
 $context = context_module::instance($cm->id);
 
 require_login($course, true, $cm);
-require_capability('mod/videolesson:view', $context);
+require_capability('mod/lessonvideo:view', $context);
 
-$PAGE->set_url('/mod/videolesson/view.php', ['id' => $cm->id]);
+$PAGE->set_url('/mod/lessonvideo/view.php', ['id' => $cm->id]);
 $PAGE->set_context($context);
 $PAGE->set_title(format_string($activity->name));
 $PAGE->set_heading(format_string($course->fullname));
@@ -47,13 +47,13 @@ $completion = new completion_info($course);
 if ($completion->is_enabled($cm)) {
     $completion->set_module_viewed($cm);
 }
-$event = \mod_videolesson\event\course_module_viewed::create([
+$event = \mod_lessonvideo\event\course_module_viewed::create([
     'objectid' => $activity->id,
     'context' => $context,
 ]);
 $event->add_record_snapshot('course', $course);
 $event->add_record_snapshot('course_modules', $cm);
-$event->add_record_snapshot('videolesson', $activity);
+$event->add_record_snapshot('lessonvideo', $activity);
 $event->trigger();
 
 $manager = new progress_manager();
@@ -61,8 +61,8 @@ $progress = $manager->get_progress((int)$activity->id, $USER->id);
 $state = $manager->recalculate($activity, $USER->id, $progress);
 $player = player_config::build($activity, $context);
 $chapters = array_values($DB->get_records(
-    'videolesson_chapters',
-    ['videolessonid' => $activity->id],
+    'lessonvideo_chapters',
+    ['lessonvideoid' => $activity->id],
     'starttime ASC, sortorder ASC, id ASC'
 ));
 $states = [];
@@ -92,19 +92,19 @@ foreach ($chapters as $chapter) {
     ];
     $locked = (float)$state['unlockedmax'] >= 0
         && (float)$chapter->starttime > (float)$state['unlockedmax'] + 0.1;
-    $items = $DB->get_records('videolesson_items', ['chapterid' => $chapter->id], 'sortorder ASC, id ASC');
+    $items = $DB->get_records('lessonvideo_items', ['chapterid' => $chapter->id], 'sortorder ASC, id ASC');
     $itemdata = [];
     foreach ($items as $item) {
         $itemdata[] = item_presenter::build($item, $context, $USER->id);
     }
-    $status = get_string('notstarted', 'videolesson');
+    $status = get_string('notstarted', 'lessonvideo');
     if (!empty($chapterstate['completed'])) {
-        $status = get_string('completed', 'videolesson');
+        $status = get_string('completed', 'lessonvideo');
     } else if (!empty($chapterstate['inprogress'])) {
-        $status = get_string('inprogress', 'videolesson');
+        $status = get_string('inprogress', 'lessonvideo');
     }
     if ($locked) {
-        $status = get_string('locked', 'videolesson');
+        $status = get_string('locked', 'lessonvideo');
     }
     $chapterdata[] = [
         'id' => (int)$chapter->id,
@@ -149,7 +149,7 @@ $config = [
 
 $templatedata = [
     'name' => format_string($activity->name),
-    'intro' => trim((string)$activity->intro) !== '' ? format_module_intro('videolesson', $activity, $cm->id) : '',
+    'intro' => trim((string)$activity->intro) !== '' ? format_module_intro('lessonvideo', $activity, $cm->id) : '',
     'hasintro' => trim((string)$activity->intro) !== '',
     'player' => $player,
     'chapters' => $chapterdata,
@@ -160,17 +160,17 @@ $templatedata = [
         'completed' => !empty($state['completed']),
     ],
     'configjson' => json_encode($config, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT),
-    'canmanage' => has_capability('mod/videolesson:managechapters', $context),
-    'manageurl' => (new moodle_url('/mod/videolesson/manage.php', ['id' => $cm->id]))->out(false),
-    'canviewreport' => has_capability('mod/videolesson:viewreport', $context),
-    'reporturl' => (new moodle_url('/mod/videolesson/report.php', ['id' => $cm->id]))->out(false),
+    'canmanage' => has_capability('mod/lessonvideo:managechapters', $context),
+    'manageurl' => (new moodle_url('/mod/lessonvideo/manage.php', ['id' => $cm->id]))->out(false),
+    'canviewreport' => has_capability('mod/lessonvideo:viewreport', $context),
+    'reporturl' => (new moodle_url('/mod/lessonvideo/report.php', ['id' => $cm->id]))->out(false),
 ];
 
 $PAGE->requires->strings_for_js([
     'completed', 'inprogress', 'notstarted', 'locked', 'trackingerror', 'seekblocked', 'itemcomplete', 'itemerror',
-], 'videolesson');
-$PAGE->requires->js_call_amd('mod_videolesson/player', 'init');
+], 'lessonvideo');
+$PAGE->requires->js_call_amd('mod_lessonvideo/player', 'init');
 
 echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('mod_videolesson/view', $templatedata);
+echo $OUTPUT->render_from_template('mod_lessonvideo/view', $templatedata);
 echo $OUTPUT->footer();

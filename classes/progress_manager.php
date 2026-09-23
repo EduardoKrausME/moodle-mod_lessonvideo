@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_videolesson;
+namespace mod_lessonvideo;
 
 use context_module;
 use stdClass;
@@ -22,7 +22,7 @@ use stdClass;
 /**
  * Server-authoritative progress calculator for lessons and chapters.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -45,13 +45,13 @@ class progress_manager {
      */
     public function get_progress(int $lessonid, int $userid): stdClass {
         global $DB;
-        $record = $DB->get_record('videolesson_progress', ['videolessonid' => $lessonid, 'userid' => $userid]);
+        $record = $DB->get_record('lessonvideo_progress', ['lessonvideoid' => $lessonid, 'userid' => $userid]);
         if ($record) {
             return $record;
         }
         return (object)[
             'id' => 0,
-            'videolessonid' => $lessonid,
+            'lessonvideoid' => $lessonid,
             'userid' => $userid,
             'duration' => 0,
             'lastposition' => 0,
@@ -89,8 +89,8 @@ class progress_manager {
         }
 
         $progress = $this->get_progress((int)$activity->id, $userid);
-        $session = $DB->get_record('videolesson_sessions', [
-            'videolessonid' => $activity->id,
+        $session = $DB->get_record('lessonvideo_sessions', [
+            'lessonvideoid' => $activity->id,
             'userid' => $userid,
             'sessionkey' => $sessionkey,
         ]);
@@ -178,14 +178,14 @@ class progress_manager {
         $progress->timemodified = $now;
         if (empty($progress->id)) {
             $progress->timecreated = $now;
-            $progress->id = $DB->insert_record('videolesson_progress', $progress);
+            $progress->id = $DB->insert_record('lessonvideo_progress', $progress);
         } else {
-            $DB->update_record('videolesson_progress', $progress);
+            $DB->update_record('lessonvideo_progress', $progress);
         }
 
         if (!$session) {
             $session = (object)[
-                'videolessonid' => $activity->id,
+                'lessonvideoid' => $activity->id,
                 'userid' => $userid,
                 'sessionkey' => $sessionkey,
                 'sequence' => $sequence,
@@ -195,20 +195,20 @@ class progress_manager {
                 'timecreated' => $now,
                 'timemodified' => $now,
             ];
-            $session->id = $DB->insert_record('videolesson_sessions', $session);
+            $session->id = $DB->insert_record('lessonvideo_sessions', $session);
         } else {
             $session->sequence = $sequence;
             $session->lastposition = $position;
             $session->lastclienttime = $clienttime;
             $session->lastheartbeat = $now;
             $session->timemodified = $now;
-            $DB->update_record('videolesson_sessions', $session);
+            $DB->update_record('lessonvideo_sessions', $session);
         }
 
         $state = $this->recalculate($activity, $userid, $progress);
         $this->update_moodle_completion($activity, $cm, $userid, $state['completed']);
-        if (function_exists('videolesson_update_grades')) {
-            videolesson_update_grades($activity, $userid, false);
+        if (function_exists('lessonvideo_update_grades')) {
+            lessonvideo_update_grades($activity, $userid, false);
         }
         $state['seekto'] = $position;
         $state['accepted'] = true;
@@ -227,8 +227,8 @@ class progress_manager {
     public function recalculate(stdClass $activity, int $userid, ?stdClass $progress = null): array {
         global $DB;
         $progress = $progress ?? $this->get_progress((int)$activity->id, $userid);
-        $chapters = array_values($DB->get_records('videolesson_chapters',
-            ['videolessonid' => $activity->id], 'starttime ASC, sortorder ASC, id ASC'));
+        $chapters = array_values($DB->get_records('lessonvideo_chapters',
+            ['lessonvideoid' => $activity->id], 'starttime ASC, sortorder ASC, id ASC'));
         $segments = $this->decode_segments($progress->watchedsegments);
         $chapterstates = [];
         $weightedwatched = 0.0;
@@ -284,7 +284,7 @@ class progress_manager {
         $progress->completed = $completed ? 1 : 0;
         $progress->timemodified = time();
         if (!empty($progress->id)) {
-            $DB->update_record('videolesson_progress', $progress);
+            $DB->update_record('lessonvideo_progress', $progress);
         }
 
         $unlockedmax = $this->get_unlocked_max($activity, $userid, (float)$progress->duration);
@@ -310,21 +310,21 @@ class progress_manager {
      */
     public function complete_item(stdClass $activity, stdClass $cm, int $itemid, int $userid, string $response): array {
         global $DB;
-        $item = $DB->get_record('videolesson_items', ['id' => $itemid], '*', MUST_EXIST);
-        $chapter = $DB->get_record('videolesson_chapters', ['id' => $item->chapterid], '*', MUST_EXIST);
-        if ((int)$chapter->videolessonid !== (int)$activity->id) {
-            throw new \moodle_exception('invaliditem', 'videolesson');
+        $item = $DB->get_record('lessonvideo_items', ['id' => $itemid], '*', MUST_EXIST);
+        $chapter = $DB->get_record('lessonvideo_chapters', ['id' => $item->chapterid], '*', MUST_EXIST);
+        if ((int)$chapter->lessonvideoid !== (int)$activity->id) {
+            throw new \moodle_exception('invaliditem', 'lessonvideo');
         }
         $progress = $this->get_progress((int)$activity->id, $userid);
         $unlockedmax = $this->get_unlocked_max($activity, $userid, (float)$progress->duration);
         if ($unlockedmax !== null && (float)$chapter->starttime > $unlockedmax + 0.1) {
-            throw new \moodle_exception('chapterlocked', 'videolesson');
+            throw new \moodle_exception('chapterlocked', 'lessonvideo');
         }
         $response = trim(clean_param($response, PARAM_TEXT));
         if ($item->type === 'question' && $response === '') {
-            throw new \moodle_exception('questionresponseempty', 'videolesson');
+            throw new \moodle_exception('questionresponseempty', 'lessonvideo');
         }
-        $record = $DB->get_record('videolesson_itemprogress', ['itemid' => $itemid, 'userid' => $userid]);
+        $record = $DB->get_record('lessonvideo_itemprogress', ['itemid' => $itemid, 'userid' => $userid]);
         $now = time();
         if (!$record) {
             $record = (object)[
@@ -335,13 +335,13 @@ class progress_manager {
                 'timecompleted' => $now,
                 'timemodified' => $now,
             ];
-            $DB->insert_record('videolesson_itemprogress', $record);
+            $DB->insert_record('lessonvideo_itemprogress', $record);
         } else {
             $record->completed = 1;
             $record->response = $response;
             $record->timecompleted = $record->timecompleted ?: $now;
             $record->timemodified = $now;
-            $DB->update_record('videolesson_itemprogress', $record);
+            $DB->update_record('lessonvideo_itemprogress', $record);
         }
         $state = $this->recalculate($activity, $userid);
         $this->update_moodle_completion($activity, $cm, $userid, $state['completed']);
@@ -358,8 +358,8 @@ class progress_manager {
      */
     public function get_unlocked_max(stdClass $activity, int $userid, float $duration): ?float {
         global $DB;
-        $chapters = array_values($DB->get_records('videolesson_chapters',
-            ['videolessonid' => $activity->id], 'starttime ASC, sortorder ASC, id ASC'));
+        $chapters = array_values($DB->get_records('lessonvideo_chapters',
+            ['lessonvideoid' => $activity->id], 'starttime ASC, sortorder ASC, id ASC'));
         if (!$chapters) {
             return null;
         }
@@ -367,7 +367,7 @@ class progress_manager {
             if (empty($chapter->locknext)) {
                 continue;
             }
-            $cp = $DB->get_record('videolesson_chprogress', ['chapterid' => $chapter->id, 'userid' => $userid]);
+            $cp = $DB->get_record('lessonvideo_chprogress', ['chapterid' => $chapter->id, 'userid' => $userid]);
             if (!$cp || empty($cp->completed)) {
                 if (isset($chapters[$index + 1])) {
                     return max(0.0, (float)$chapters[$index + 1]->starttime - 0.05);
@@ -387,9 +387,9 @@ class progress_manager {
      */
     private function required_items_complete(int $chapterid, int $userid): bool {
         global $DB;
-        $items = $DB->get_records('videolesson_items', ['chapterid' => $chapterid, 'required' => 1]);
+        $items = $DB->get_records('lessonvideo_items', ['chapterid' => $chapterid, 'required' => 1]);
         foreach ($items as $item) {
-            if (!$DB->record_exists('videolesson_itemprogress', ['itemid' => $item->id, 'userid' => $userid, 'completed' => 1])) {
+            if (!$DB->record_exists('lessonvideo_itemprogress', ['itemid' => $item->id, 'userid' => $userid, 'completed' => 1])) {
                 return false;
             }
         }
@@ -408,7 +408,7 @@ class progress_manager {
      */
     private function store_chapter_progress(stdClass $chapter, int $userid, float $watched, float $percent, bool $complete): void {
         global $DB;
-        $record = $DB->get_record('videolesson_chprogress', ['chapterid' => $chapter->id, 'userid' => $userid]);
+        $record = $DB->get_record('lessonvideo_chprogress', ['chapterid' => $chapter->id, 'userid' => $userid]);
         $now = time();
         if (!$record) {
             $record = (object)[
@@ -420,7 +420,7 @@ class progress_manager {
                 'timecompleted' => $complete ? $now : 0,
                 'timemodified' => $now,
             ];
-            $DB->insert_record('videolesson_chprogress', $record);
+            $DB->insert_record('lessonvideo_chprogress', $record);
         } else {
             $wascomplete = !empty($record->completed);
             $record->watchedseconds = $watched;
@@ -430,7 +430,7 @@ class progress_manager {
                 $record->timecompleted = $now;
             }
             $record->timemodified = $now;
-            $DB->update_record('videolesson_chprogress', $record);
+            $DB->update_record('lessonvideo_chprogress', $record);
         }
     }
 

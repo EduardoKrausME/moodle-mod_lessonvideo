@@ -17,16 +17,16 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/videolesson/backup/moodle2/restore_videolesson_stepslib.php');
+require_once($CFG->dirroot . '/mod/lessonvideo/backup/moodle2/restore_lessonvideo_stepslib.php');
 
 /**
  * Restore task for Video Lesson.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_videolesson_activity_task extends restore_activity_task {
+class restore_lessonvideo_activity_task extends restore_activity_task {
 
     /**
      * Method define_my_settings.
@@ -42,7 +42,7 @@ class restore_videolesson_activity_task extends restore_activity_task {
      * @return void Return value.
      */
     protected function define_my_steps(): void {
-        $this->add_step(new restore_videolesson_activity_structure_step('videolesson_structure', 'videolesson.xml'));
+        $this->add_step(new restore_lessonvideo_activity_structure_step('lessonvideo_structure', 'lessonvideo.xml'));
     }
 
     /**
@@ -51,7 +51,7 @@ class restore_videolesson_activity_task extends restore_activity_task {
      * @return array
      */
     public static function define_decode_contents(): array {
-        return [new restore_decode_content('videolesson', ['intro'], 'videolesson')];
+        return [new restore_decode_content('lessonvideo', ['intro'], 'lessonvideo')];
     }
 
     /**
@@ -61,8 +61,8 @@ class restore_videolesson_activity_task extends restore_activity_task {
      */
     public static function define_decode_rules(): array {
         return [
-            new restore_decode_rule('VIDELESSONVIEWBYID', '/mod/videolesson/view.php?id=$1', 'course_module'),
-            new restore_decode_rule('VIDELESSONINDEX', '/mod/videolesson/index.php?id=$1', 'course'),
+            new restore_decode_rule('VIDELESSONVIEWBYID', '/mod/lessonvideo/view.php?id=$1', 'course_module'),
+            new restore_decode_rule('VIDELESSONINDEX', '/mod/lessonvideo/index.php?id=$1', 'course'),
         ];
     }
 }

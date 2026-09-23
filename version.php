@@ -17,14 +17,14 @@
 /**
  * Version information for Video Lesson.
  *
- * @package   mod_videolesson
+ * @package   mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_videolesson';
+$plugin->component = 'mod_lessonvideo';
 $plugin->version = 2026092300;
 $plugin->requires = 2024100700;
 $plugin->maturity = MATURITY_STABLE;

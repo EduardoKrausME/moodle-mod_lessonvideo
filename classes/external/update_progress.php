@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_videolesson\external;
+namespace mod_lessonvideo\external;
 
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
-use mod_videolesson\progress_manager;
+use mod_lessonvideo\progress_manager;
 
 /**
  * AJAX endpoint for validated playback heartbeats.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -74,11 +74,11 @@ class update_progress extends external_api {
             'cmid', 'sessionkey', 'sequence', 'duration', 'currentposition', 'segmentstart', 'segmentend',
             'playbackrate', 'clienttime', 'playerstate'
         ));
-        $cm = get_coursemodule_from_id('videolesson', $params['cmid'], 0, false, MUST_EXIST);
+        $cm = get_coursemodule_from_id('lessonvideo', $params['cmid'], 0, false, MUST_EXIST);
         $context = \context_module::instance($cm->id);
         self::validate_context($context);
-        require_capability('mod/videolesson:view', $context);
-        $activity = $DB->get_record('videolesson', ['id' => $cm->instance], '*', MUST_EXIST);
+        require_capability('mod/lessonvideo:view', $context);
+        $activity = $DB->get_record('lessonvideo', ['id' => $cm->instance], '*', MUST_EXIST);
         $state = (new progress_manager())->update($activity, $cm, $USER->id, $params);
         return $state;
     }

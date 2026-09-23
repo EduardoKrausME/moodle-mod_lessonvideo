@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_videolesson\form;
+namespace mod_lessonvideo\form;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -23,7 +23,7 @@ require_once("{$CFG->libdir}/formslib.php");
 /**
  * Complementary chapter item form.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -43,38 +43,38 @@ class item_form extends \moodleform {
         $mform->addElement('hidden', 'itemid', $this->_customdata['itemid'] ?? 0);
         $mform->setType('itemid', PARAM_INT);
 
-        $mform->addElement('select', 'type', get_string('itemtype', 'videolesson'), [
-            'text' => get_string('itemtypetext', 'videolesson'),
-            'image' => get_string('itemtypeimage', 'videolesson'),
-            'pdf' => get_string('itemtypepdf', 'videolesson'),
-            'file' => get_string('itemtypefile', 'videolesson'),
-            'link' => get_string('itemtypelink', 'videolesson'),
-            'question' => get_string('itemtypequestion', 'videolesson'),
-            'activity' => get_string('itemtypeactivity', 'videolesson'),
+        $mform->addElement('select', 'type', get_string('itemtype', 'lessonvideo'), [
+            'text' => get_string('itemtypetext', 'lessonvideo'),
+            'image' => get_string('itemtypeimage', 'lessonvideo'),
+            'pdf' => get_string('itemtypepdf', 'lessonvideo'),
+            'file' => get_string('itemtypefile', 'lessonvideo'),
+            'link' => get_string('itemtypelink', 'lessonvideo'),
+            'question' => get_string('itemtypequestion', 'lessonvideo'),
+            'activity' => get_string('itemtypeactivity', 'lessonvideo'),
         ]);
         $mform->setDefault('type', 'text');
-        $mform->addElement('text', 'title', get_string('itemtitle', 'videolesson'), ['size' => 60]);
+        $mform->addElement('text', 'title', get_string('itemtitle', 'lessonvideo'), ['size' => 60]);
         $mform->setType('title', PARAM_TEXT);
         $mform->addRule('title', null, 'required', null, 'client');
 
-        $mform->addElement('editor', 'content_editor', get_string('itemcontent', 'videolesson'), null, [
+        $mform->addElement('editor', 'content_editor', get_string('itemcontent', 'lessonvideo'), null, [
             'maxfiles' => 0,
             'noclean' => false,
         ]);
         $mform->hideIf('content_editor', 'type', 'in', ['image', 'pdf', 'file', 'link']);
 
-        $mform->addElement('url', 'url', get_string('itemurl', 'videolesson'), ['size' => 60], ['usefilepicker' => false]);
+        $mform->addElement('url', 'url', get_string('itemurl', 'lessonvideo'), ['size' => 60], ['usefilepicker' => false]);
         $mform->setType('url', PARAM_URL);
         $mform->hideIf('url', 'type', 'neq', 'link');
 
-        $mform->addElement('filemanager', 'itemfile', get_string('itemfile', 'videolesson'), null, [
+        $mform->addElement('filemanager', 'itemfile', get_string('itemfile', 'lessonvideo'), null, [
             'subdirs' => 0,
         ]);
         $mform->hideIf('itemfile', 'type', 'notin', ['image', 'pdf', 'file']);
 
-        $mform->addElement('advcheckbox', 'required', get_string('itemrequired', 'videolesson'));
-        $mform->addHelpButton('required', 'itemrequired', 'videolesson');
-        $this->add_action_buttons(true, get_string('saveitem', 'videolesson'));
+        $mform->addElement('advcheckbox', 'required', get_string('itemrequired', 'lessonvideo'));
+        $mform->addHelpButton('required', 'itemrequired', 'lessonvideo');
+        $this->add_action_buttons(true, get_string('saveitem', 'lessonvideo'));
     }
 
     /**
@@ -98,7 +98,7 @@ class item_form extends \moodleform {
             $draftid = (int)($data['itemfile'] ?? 0);
             $draftinfo = $draftid ? file_get_draft_area_info($draftid) : ['filecount' => 0];
             if (empty($draftinfo['filecount'])) {
-                $errors['itemfile'] = get_string('itemfilerequired', 'videolesson');
+                $errors['itemfile'] = get_string('itemfilerequired', 'lessonvideo');
             }
         }
         foreach (['itemfile'] as $field) {
@@ -106,7 +106,7 @@ class item_form extends \moodleform {
             if ($draftid > 0) {
                 $draftinfo = file_get_draft_area_info($draftid);
                 if ((int)$draftinfo['filecount'] > 1) {
-                    $errors[$field] = get_string('errormaxfiles', 'videolesson');
+                    $errors[$field] = get_string('errormaxfiles', 'lessonvideo');
                 }
             }
         }

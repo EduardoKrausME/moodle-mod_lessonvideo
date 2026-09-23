@@ -17,12 +17,12 @@
 /**
  * Core callbacks for Video Lesson.
  *
- * @package   mod_videolesson
+ * @package   mod_lessonvideo
  * @copyright 2026 Eduardo Kraus
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use mod_videolesson\progress_manager;
+use mod_lessonvideo\progress_manager;
 
 /**
  * Declares Moodle features supported by this module.
@@ -30,7 +30,7 @@ use mod_videolesson\progress_manager;
  * @param string $feature Feature constant.
  * @return mixed
  */
-function videolesson_supports(string $feature) {
+function lessonvideo_supports(string $feature) {
     return match ($feature) {
         FEATURE_MOD_INTRO => true,
         FEATURE_SHOW_DESCRIPTION => true,
@@ -50,14 +50,14 @@ function videolesson_supports(string $feature) {
  * @param mixed $mform Activity form.
  * @return int New instance id.
  */
-function videolesson_add_instance(stdClass $data, $mform = null): int {
+function lessonvideo_add_instance(stdClass $data, $mform = null): int {
     global $DB;
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
-    $data->id = $DB->insert_record('videolesson', $data);
+    $data->id = $DB->insert_record('lessonvideo', $data);
     $context = context_module::instance((int)$data->coursemodule);
-    videolesson_save_activity_files($data, $context);
-    videolesson_grade_item_update($data);
+    lessonvideo_save_activity_files($data, $context);
+    lessonvideo_grade_item_update($data);
     return (int)$data->id;
 }
 
@@ -68,14 +68,14 @@ function videolesson_add_instance(stdClass $data, $mform = null): int {
  * @param mixed $mform Activity form.
  * @return bool
  */
-function videolesson_update_instance(stdClass $data, $mform = null): bool {
+function lessonvideo_update_instance(stdClass $data, $mform = null): bool {
     global $DB;
     $data->id = $data->instance;
     $data->timemodified = time();
-    $DB->update_record('videolesson', $data);
+    $DB->update_record('lessonvideo', $data);
     $context = context_module::instance((int)$data->coursemodule);
-    videolesson_save_activity_files($data, $context);
-    videolesson_grade_item_update($data);
+    lessonvideo_save_activity_files($data, $context);
+    lessonvideo_grade_item_update($data);
     return true;
 }
 
@@ -86,10 +86,10 @@ function videolesson_update_instance(stdClass $data, $mform = null): bool {
  * @param context_module $context Module context.
  * @return void
  */
-function videolesson_save_activity_files(stdClass $data, context_module $context): void {
+function lessonvideo_save_activity_files(stdClass $data, context_module $context): void {
     foreach (['videofile', 'captions'] as $area) {
         if (isset($data->{$area})) {
-            file_save_draft_area_files((int)$data->{$area}, $context->id, 'mod_videolesson', $area, 0, [
+            file_save_draft_area_files((int)$data->{$area}, $context->id, 'mod_lessonvideo', $area, 0, [
                 'subdirs' => 0,
                 'maxfiles' => $area === 'videofile' ? 1 : 20,
             ]);
@@ -103,26 +103,26 @@ function videolesson_save_activity_files(stdClass $data, context_module $context
  * @param int $id Instance id.
  * @return bool
  */
-function videolesson_delete_instance(int $id): bool {
+function lessonvideo_delete_instance(int $id): bool {
     global $DB;
-    $activity = $DB->get_record('videolesson', ['id' => $id]);
+    $activity = $DB->get_record('lessonvideo', ['id' => $id]);
     if (!$activity) {
         return false;
     }
-    $chapters = $DB->get_records('videolesson_chapters', ['videolessonid' => $id]);
+    $chapters = $DB->get_records('lessonvideo_chapters', ['lessonvideoid' => $id]);
     foreach ($chapters as $chapter) {
-        $items = $DB->get_records('videolesson_items', ['chapterid' => $chapter->id]);
+        $items = $DB->get_records('lessonvideo_items', ['chapterid' => $chapter->id]);
         foreach ($items as $item) {
-            $DB->delete_records('videolesson_itemprogress', ['itemid' => $item->id]);
+            $DB->delete_records('lessonvideo_itemprogress', ['itemid' => $item->id]);
         }
-        $DB->delete_records('videolesson_items', ['chapterid' => $chapter->id]);
-        $DB->delete_records('videolesson_chprogress', ['chapterid' => $chapter->id]);
+        $DB->delete_records('lessonvideo_items', ['chapterid' => $chapter->id]);
+        $DB->delete_records('lessonvideo_chprogress', ['chapterid' => $chapter->id]);
     }
-    $DB->delete_records('videolesson_chapters', ['videolessonid' => $id]);
-    $DB->delete_records('videolesson_progress', ['videolessonid' => $id]);
-    $DB->delete_records('videolesson_sessions', ['videolessonid' => $id]);
-    $DB->delete_records('videolesson', ['id' => $id]);
-    videolesson_grade_item_delete($activity);
+    $DB->delete_records('lessonvideo_chapters', ['lessonvideoid' => $id]);
+    $DB->delete_records('lessonvideo_progress', ['lessonvideoid' => $id]);
+    $DB->delete_records('lessonvideo_sessions', ['lessonvideoid' => $id]);
+    $DB->delete_records('lessonvideo', ['id' => $id]);
+    lessonvideo_grade_item_delete($activity);
     return true;
 }
 
@@ -138,14 +138,14 @@ function videolesson_delete_instance(int $id): bool {
  * @param array $options Send options.
  * @return bool
  */
-function videolesson_pluginfile($course, $cm, $context, string $filearea, array $args,
+function lessonvideo_pluginfile($course, $cm, $context, string $filearea, array $args,
                                 bool $forcedownload, array $options = []): bool {
     global $DB;
     if ($context->contextlevel !== CONTEXT_MODULE) {
         return false;
     }
     require_login($course, true, $cm);
-    require_capability('mod/videolesson:view', $context);
+    require_capability('mod/lessonvideo:view', $context);
     if (!in_array($filearea, ['videofile', 'captions', 'itemfile'], true)) {
         return false;
     }
@@ -154,16 +154,16 @@ function videolesson_pluginfile($course, $cm, $context, string $filearea, array 
         return false;
     }
     if ($filearea === 'itemfile') {
-        $item = $DB->get_record('videolesson_items', ['id' => $itemid], '*', MUST_EXIST);
-        $chapter = $DB->get_record('videolesson_chapters', ['id' => $item->chapterid], '*', MUST_EXIST);
-        if ((int)$chapter->videolessonid !== (int)$cm->instance) {
+        $item = $DB->get_record('lessonvideo_items', ['id' => $itemid], '*', MUST_EXIST);
+        $chapter = $DB->get_record('lessonvideo_chapters', ['id' => $item->chapterid], '*', MUST_EXIST);
+        if ((int)$chapter->lessonvideoid !== (int)$cm->instance) {
             return false;
         }
     }
     $filename = array_pop($args);
     $filepath = '/' . ($args ? implode('/', $args) . '/' : '');
     $fs = get_file_storage();
-    $file = $fs->get_file($context->id, 'mod_videolesson', $filearea, $itemid, $filepath, $filename);
+    $file = $fs->get_file($context->id, 'mod_lessonvideo', $filearea, $itemid, $filepath, $filename);
     if (!$file || $file->is_directory()) {
         return false;
     }
@@ -179,11 +179,11 @@ function videolesson_pluginfile($course, $cm, $context, string $filearea, array 
  * @param context $context Module context.
  * @return array
  */
-function videolesson_get_file_areas($course, $cm, $context): array {
+function lessonvideo_get_file_areas($course, $cm, $context): array {
     return [
-        'videofile' => get_string('videofile', 'videolesson'),
-        'captions' => get_string('captions', 'videolesson'),
-        'itemfile' => get_string('itemfile', 'videolesson'),
+        'videofile' => get_string('videofile', 'lessonvideo'),
+        'captions' => get_string('captions', 'lessonvideo'),
+        'itemfile' => get_string('itemfile', 'lessonvideo'),
     ];
 }
 
@@ -193,16 +193,16 @@ function videolesson_get_file_areas($course, $cm, $context): array {
  * @param stdClass $cm Course module record.
  * @return cached_cm_info|null
  */
-function videolesson_get_coursemodule_info(stdClass $cm): ?cached_cm_info {
+function lessonvideo_get_coursemodule_info(stdClass $cm): ?cached_cm_info {
     global $DB;
-    $activity = $DB->get_record('videolesson', ['id' => $cm->instance], 'id,name,intro,introformat,completionchapters');
+    $activity = $DB->get_record('lessonvideo', ['id' => $cm->instance], 'id,name,intro,introformat,completionchapters');
     if (!$activity) {
         return null;
     }
     $info = new cached_cm_info();
     $info->name = $activity->name;
     if ($cm->showdescription) {
-        $info->content = format_module_intro('videolesson', $activity, $cm->id, false);
+        $info->content = format_module_intro('lessonvideo', $activity, $cm->id, false);
     }
     if ((int)$cm->completion === COMPLETION_TRACKING_AUTOMATIC) {
         $info->customdata['customcompletionrules'] = [
@@ -218,12 +218,12 @@ function videolesson_get_coursemodule_info(stdClass $cm): ?cached_cm_info {
  * @param cached_cm_info $cm Course module info.
  * @return array
  */
-function videolesson_get_completion_active_rule_descriptions(cached_cm_info $cm): array {
+function lessonvideo_get_completion_active_rule_descriptions(cached_cm_info $cm): array {
     if ((int)$cm->completion !== COMPLETION_TRACKING_AUTOMATIC ||
         empty($cm->customdata['customcompletionrules']['completionchapters'])) {
         return [];
     }
-    return [get_string('completiondetail:chapters', 'videolesson')];
+    return [get_string('completiondetail:chapters', 'lessonvideo')];
 }
 
 /**
@@ -235,10 +235,10 @@ function videolesson_get_completion_active_rule_descriptions(cached_cm_info $cm)
  * @param bool $type Expected state.
  * @return bool
  */
-function videolesson_get_completion_state($course, $cm, int $userid, bool $type): bool {
+function lessonvideo_get_completion_state($course, $cm, int $userid, bool $type): bool {
     global $DB;
-    $progress = $DB->get_record('videolesson_progress', [
-        'videolessonid' => $cm->instance,
+    $progress = $DB->get_record('lessonvideo_progress', [
+        'lessonvideoid' => $cm->instance,
         'userid' => $userid,
     ]);
     return $progress ? !empty($progress->completed) : false;
@@ -251,7 +251,7 @@ function videolesson_get_completion_state($course, $cm, int $userid, bool $type)
  * @param array|null $grades Optional grades.
  * @return int
  */
-function videolesson_grade_item_update(stdClass $activity, ?array $grades = null): int {
+function lessonvideo_grade_item_update(stdClass $activity, ?array $grades = null): int {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
     $item = [
@@ -260,7 +260,7 @@ function videolesson_grade_item_update(stdClass $activity, ?array $grades = null
         'grademin' => 0,
         'grademax' => 100,
     ];
-    return grade_update('mod/videolesson', $activity->course, 'mod', 'videolesson', $activity->id, 0, $grades, $item);
+    return grade_update('mod/lessonvideo', $activity->course, 'mod', 'lessonvideo', $activity->id, 0, $grades, $item);
 }
 
 /**
@@ -271,13 +271,13 @@ function videolesson_grade_item_update(stdClass $activity, ?array $grades = null
  * @param bool $nullifnone Whether to push null when no record exists.
  * @return void
  */
-function videolesson_update_grades(stdClass $activity, int $userid = 0, bool $nullifnone = true): void {
+function lessonvideo_update_grades(stdClass $activity, int $userid = 0, bool $nullifnone = true): void {
     global $DB;
-    $conditions = ['videolessonid' => $activity->id];
+    $conditions = ['lessonvideoid' => $activity->id];
     if ($userid) {
         $conditions['userid'] = $userid;
     }
-    $records = $DB->get_records('videolesson_progress', $conditions);
+    $records = $DB->get_records('lessonvideo_progress', $conditions);
     $grades = [];
     foreach ($records as $record) {
         $grades[$record->userid] = (object)['userid' => $record->userid, 'rawgrade' => (float)$record->percent];
@@ -285,7 +285,7 @@ function videolesson_update_grades(stdClass $activity, int $userid = 0, bool $nu
     if (!$grades && $userid && $nullifnone) {
         $grades[$userid] = (object)['userid' => $userid, 'rawgrade' => null];
     }
-    videolesson_grade_item_update($activity, $grades);
+    lessonvideo_grade_item_update($activity, $grades);
 }
 
 /**
@@ -294,8 +294,8 @@ function videolesson_update_grades(stdClass $activity, int $userid = 0, bool $nu
  * @param stdClass $activity Activity record.
  * @return int
  */
-function videolesson_grade_item_delete(stdClass $activity): int {
+function lessonvideo_grade_item_delete(stdClass $activity): int {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
-    return grade_update('mod/videolesson', $activity->course, 'mod', 'videolesson', $activity->id, 0, null, ['deleted' => 1]);
+    return grade_update('mod/lessonvideo', $activity->course, 'mod', 'lessonvideo', $activity->id, 0, null, ['deleted' => 1]);
 }

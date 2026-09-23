@@ -15,22 +15,22 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_videolesson/manage
+    @template mod_lessonvideo/manage
 
     Example context (json):
     {
         Aqui tem que criar o context em inglês
     }
 }}
-<div class="videolesson-manage">
+<div class="lessonvideo-manage">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div>
-            <h2>{{#str}}managechapters, videolesson{{/str}}</h2>
+            <h2>{{#str}}managechapters, lessonvideo{{/str}}</h2>
             <p class="mb-0">{{name}}</p>
         </div>
         <div class="d-flex gap-2">
-            <a class="btn btn-secondary" href="{{{viewurl}}}">{{#str}}backtolesson, videolesson{{/str}}</a>
-            <a class="btn btn-primary" href="{{{addchapterurl}}}">{{#str}}addchapter, videolesson{{/str}}</a>
+            <a class="btn btn-secondary" href="{{{viewurl}}}">{{#str}}backtolesson, lessonvideo{{/str}}</a>
+            <a class="btn btn-primary" href="{{{addchapterurl}}}">{{#str}}addchapter, lessonvideo{{/str}}</a>
         </div>
     </div>
     {{#haschapters}}
@@ -38,11 +38,11 @@
             <section class="card mb-3">
                 <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <div>
-                        <strong><span class="videolesson-time">{{start}}</span> {{title}}</strong>
+                        <strong><span class="lessonvideo-time">{{start}}</span> {{title}}</strong>
                         {{#required}}<span class="badge text-bg-primary ms-2">{{#str}}
-                            required, videolesson{{/str}}</span>{{/required}}
+                            required, lessonvideo{{/str}}</span>{{/required}}
                         {{#locknext}}<span class="badge text-bg-warning ms-1">{{#str}}
-                            chapterlocknextshort, videolesson{{/str}}</span>{{/locknext}}
+                            chapterlocknextshort, lessonvideo{{/str}}</span>{{/locknext}}
                     </div>
                     <div class="d-flex gap-2">
                         <a class="btn btn-sm btn-outline-primary" href="{{{editurl}}}">{{#str}}edit, core{{/str}}</a>
@@ -51,9 +51,9 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h3 class="h5 mb-0">{{#str}}chaptercontents, videolesson{{/str}}</h3>
+                        <h3 class="h5 mb-0">{{#str}}chaptercontents, lessonvideo{{/str}}</h3>
                         <a class="btn btn-sm btn-primary" href="{{{additemurl}}}">{{#str}}
-                            addcontent, videolesson{{/str}}</a>
+                            addcontent, lessonvideo{{/str}}</a>
                     </div>
                     {{#hasitems}}
                         <div class="list-group">
@@ -62,7 +62,7 @@
                                     <div><strong>{{title}}</strong> <span
                                             class="text-muted">— {{type}}</span> {{#required}}
                                         <span class="badge text-bg-primary">{{#str}}
-                                            required, videolesson{{/str}}</span>{{/required}}</div>
+                                            required, lessonvideo{{/str}}</span>{{/required}}</div>
                                     <div class="d-flex gap-2">
                                         <a class="btn btn-sm btn-outline-primary" href="{{{editurl}}}">{{#str}}
                                             edit, core{{/str}}</a>
@@ -73,11 +73,11 @@
                             {{/items}}
                         </div>
                     {{/hasitems}}
-                    {{^hasitems}}<p class="text-muted mb-0">{{#str}}nocontent, videolesson{{/str}}</p>{{/hasitems}}
+                    {{^hasitems}}<p class="text-muted mb-0">{{#str}}nocontent, lessonvideo{{/str}}</p>{{/hasitems}}
                 </div>
             </section>
         {{/chapters}}
     {{/haschapters}}
     {{^haschapters}}
-        <div class="alert alert-info">{{#str}}nochapter, videolesson{{/str}}</div>{{/haschapters}}
+        <div class="alert alert-info">{{#str}}nochapter, lessonvideo{{/str}}</div>{{/haschapters}}
 </div>

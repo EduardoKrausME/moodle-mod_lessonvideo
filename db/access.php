@@ -17,7 +17,7 @@
 /**
  * Capabilities for Video Lesson.
  *
- * @package   mod_videolesson
+ * @package   mod_lessonvideo
  * @copyright 2026 Eduardo Kraus
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,14 +25,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
-    'mod/videolesson:addinstance' => [
+    'mod/lessonvideo:addinstance' => [
         'riskbitmask' => RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => ['editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],
         'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
-    'mod/videolesson:view' => [
+    'mod/lessonvideo:view' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => [
@@ -42,19 +42,19 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
-    'mod/videolesson:managechapters' => [
+    'mod/lessonvideo:managechapters' => [
         'riskbitmask' => RISK_XSS | RISK_DATALOSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => ['editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],
     ],
-    'mod/videolesson:viewreport' => [
+    'mod/lessonvideo:viewreport' => [
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => ['teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],
     ],
-    'mod/videolesson:resetprogress' => [
+    'mod/lessonvideo:resetprogress' => [
         'riskbitmask' => RISK_DATALOSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,

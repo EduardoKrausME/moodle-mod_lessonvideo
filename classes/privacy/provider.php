@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_videolesson\privacy;
+namespace mod_lessonvideo\privacy;
 
 use context;
 use context_module;
@@ -28,7 +28,7 @@ use core_privacy\local\request\writer;
 /**
  * Privacy API implementation for Video Lesson.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -44,31 +44,31 @@ class provider implements
      * @return collection
      */
     public static function get_metadata(collection $collection): collection {
-        $collection->add_database_table('videolesson_progress', [
-            'userid' => 'privacy:metadata:videolesson_progress:userid',
-            'lastposition' => 'privacy:metadata:videolesson_progress:lastposition',
-            'totalwatchtime' => 'privacy:metadata:videolesson_progress:totalwatchtime',
-            'watchedsegments' => 'privacy:metadata:videolesson_progress:watchedsegments',
-            'percent' => 'privacy:metadata:videolesson_progress:percent',
-            'completed' => 'privacy:metadata:videolesson_progress:completed',
-        ], 'privacy:metadata:videolesson_progress');
-        $collection->add_database_table('videolesson_chprogress', [
-            'userid' => 'privacy:metadata:videolesson_chprogress',
-            'watchedseconds' => 'privacy:metadata:videolesson_chprogress',
-            'percent' => 'privacy:metadata:videolesson_chprogress',
-            'completed' => 'privacy:metadata:videolesson_chprogress',
-        ], 'privacy:metadata:videolesson_chprogress');
-        $collection->add_database_table('videolesson_itemprogress', [
-            'userid' => 'privacy:metadata:videolesson_itemprogress',
-            'completed' => 'privacy:metadata:videolesson_itemprogress',
-            'response' => 'privacy:metadata:videolesson_itemprogress',
-        ], 'privacy:metadata:videolesson_itemprogress');
-        $collection->add_database_table('videolesson_sessions', [
-            'userid' => 'privacy:metadata:videolesson_sessions',
-            'lastposition' => 'privacy:metadata:videolesson_sessions',
-            'lastclienttime' => 'privacy:metadata:videolesson_sessions',
-            'lastheartbeat' => 'privacy:metadata:videolesson_sessions',
-        ], 'privacy:metadata:videolesson_sessions');
+        $collection->add_database_table('lessonvideo_progress', [
+            'userid' => 'privacy:metadata:lessonvideo_progress:userid',
+            'lastposition' => 'privacy:metadata:lessonvideo_progress:lastposition',
+            'totalwatchtime' => 'privacy:metadata:lessonvideo_progress:totalwatchtime',
+            'watchedsegments' => 'privacy:metadata:lessonvideo_progress:watchedsegments',
+            'percent' => 'privacy:metadata:lessonvideo_progress:percent',
+            'completed' => 'privacy:metadata:lessonvideo_progress:completed',
+        ], 'privacy:metadata:lessonvideo_progress');
+        $collection->add_database_table('lessonvideo_chprogress', [
+            'userid' => 'privacy:metadata:lessonvideo_chprogress',
+            'watchedseconds' => 'privacy:metadata:lessonvideo_chprogress',
+            'percent' => 'privacy:metadata:lessonvideo_chprogress',
+            'completed' => 'privacy:metadata:lessonvideo_chprogress',
+        ], 'privacy:metadata:lessonvideo_chprogress');
+        $collection->add_database_table('lessonvideo_itemprogress', [
+            'userid' => 'privacy:metadata:lessonvideo_itemprogress',
+            'completed' => 'privacy:metadata:lessonvideo_itemprogress',
+            'response' => 'privacy:metadata:lessonvideo_itemprogress',
+        ], 'privacy:metadata:lessonvideo_itemprogress');
+        $collection->add_database_table('lessonvideo_sessions', [
+            'userid' => 'privacy:metadata:lessonvideo_sessions',
+            'lastposition' => 'privacy:metadata:lessonvideo_sessions',
+            'lastclienttime' => 'privacy:metadata:lessonvideo_sessions',
+            'lastheartbeat' => 'privacy:metadata:lessonvideo_sessions',
+        ], 'privacy:metadata:lessonvideo_sessions');
         return $collection;
     }
 
@@ -84,23 +84,23 @@ class provider implements
                   FROM {context} ctx
                   JOIN {course_modules} cm ON cm.id = ctx.instanceid
                   JOIN {modules} m ON m.id = cm.module AND m.name = :modname
-                  JOIN {videolesson} v ON v.id = cm.instance
+                  JOIN {lessonvideo} v ON v.id = cm.instance
                  WHERE ctx.contextlevel = :contextlevel
                    AND (
-                       EXISTS (SELECT 1 FROM {videolesson_progress} p
-                                WHERE p.videolessonid = v.id AND p.userid = :userid1)
-                       OR EXISTS (SELECT 1 FROM {videolesson_chprogress} cp
-                                   JOIN {videolesson_chapters} c ON c.id = cp.chapterid
-                                  WHERE c.videolessonid = v.id AND cp.userid = :userid2)
-                       OR EXISTS (SELECT 1 FROM {videolesson_itemprogress} ip
-                                   JOIN {videolesson_items} i ON i.id = ip.itemid
-                                   JOIN {videolesson_chapters} c2 ON c2.id = i.chapterid
-                                  WHERE c2.videolessonid = v.id AND ip.userid = :userid3)
-                       OR EXISTS (SELECT 1 FROM {videolesson_sessions} s
-                                  WHERE s.videolessonid = v.id AND s.userid = :userid4)
+                       EXISTS (SELECT 1 FROM {lessonvideo_progress} p
+                                WHERE p.lessonvideoid = v.id AND p.userid = :userid1)
+                       OR EXISTS (SELECT 1 FROM {lessonvideo_chprogress} cp
+                                   JOIN {lessonvideo_chapters} c ON c.id = cp.chapterid
+                                  WHERE c.lessonvideoid = v.id AND cp.userid = :userid2)
+                       OR EXISTS (SELECT 1 FROM {lessonvideo_itemprogress} ip
+                                   JOIN {lessonvideo_items} i ON i.id = ip.itemid
+                                   JOIN {lessonvideo_chapters} c2 ON c2.id = i.chapterid
+                                  WHERE c2.lessonvideoid = v.id AND ip.userid = :userid3)
+                       OR EXISTS (SELECT 1 FROM {lessonvideo_sessions} s
+                                  WHERE s.lessonvideoid = v.id AND s.userid = :userid4)
                    )";
         $contextlist->add_from_sql($sql, [
-            'modname' => 'videolesson',
+            'modname' => 'lessonvideo',
             'contextlevel' => CONTEXT_MODULE,
             'userid1' => $userid,
             'userid2' => $userid,
@@ -123,32 +123,32 @@ class provider implements
             if (!$context instanceof context_module) {
                 continue;
             }
-            $cm = get_coursemodule_from_id('videolesson', $context->instanceid, 0, false, IGNORE_MISSING);
+            $cm = get_coursemodule_from_id('lessonvideo', $context->instanceid, 0, false, IGNORE_MISSING);
             if (!$cm) {
                 continue;
             }
-            $progress = $DB->get_record('videolesson_progress', [
-                'videolessonid' => $cm->instance,
+            $progress = $DB->get_record('lessonvideo_progress', [
+                'lessonvideoid' => $cm->instance,
                 'userid' => $userid,
             ]);
             $chapters = $DB->get_records_sql(
-                'SELECT cp.*, c.title FROM {videolesson_chprogress} cp
-                   JOIN {videolesson_chapters} c ON c.id = cp.chapterid
-                  WHERE c.videolessonid = ? AND cp.userid = ? ORDER BY c.starttime, c.id',
+                'SELECT cp.*, c.title FROM {lessonvideo_chprogress} cp
+                   JOIN {lessonvideo_chapters} c ON c.id = cp.chapterid
+                  WHERE c.lessonvideoid = ? AND cp.userid = ? ORDER BY c.starttime, c.id',
                 [$cm->instance, $userid]
             );
             $items = $DB->get_records_sql(
-                'SELECT ip.*, i.title, i.type FROM {videolesson_itemprogress} ip
-                   JOIN {videolesson_items} i ON i.id = ip.itemid
-                   JOIN {videolesson_chapters} c ON c.id = i.chapterid
-                  WHERE c.videolessonid = ? AND ip.userid = ? ORDER BY c.starttime, i.sortorder, i.id',
+                'SELECT ip.*, i.title, i.type FROM {lessonvideo_itemprogress} ip
+                   JOIN {lessonvideo_items} i ON i.id = ip.itemid
+                   JOIN {lessonvideo_chapters} c ON c.id = i.chapterid
+                  WHERE c.lessonvideoid = ? AND ip.userid = ? ORDER BY c.starttime, i.sortorder, i.id',
                 [$cm->instance, $userid]
             );
-            $sessions = $DB->get_records('videolesson_sessions', [
-                'videolessonid' => $cm->instance,
+            $sessions = $DB->get_records('lessonvideo_sessions', [
+                'lessonvideoid' => $cm->instance,
                 'userid' => $userid,
             ], 'timecreated ASC');
-            writer::with_context($context)->export_data([get_string('privacy:path', 'videolesson')], (object)[
+            writer::with_context($context)->export_data([get_string('privacy:path', 'lessonvideo')], (object)[
                 'progress' => $progress ?: null,
                 'chapters' => array_values($chapters),
                 'content' => array_values($items),
@@ -167,7 +167,7 @@ class provider implements
         if (!$context instanceof context_module) {
             return;
         }
-        $cm = get_coursemodule_from_id('videolesson', $context->instanceid, 0, false, IGNORE_MISSING);
+        $cm = get_coursemodule_from_id('lessonvideo', $context->instanceid, 0, false, IGNORE_MISSING);
         if ($cm) {
             self::delete_lesson_user_data((int)$cm->instance, null);
         }
@@ -185,7 +185,7 @@ class provider implements
             if (!$context instanceof context_module) {
                 continue;
             }
-            $cm = get_coursemodule_from_id('videolesson', $context->instanceid, 0, false, IGNORE_MISSING);
+            $cm = get_coursemodule_from_id('lessonvideo', $context->instanceid, 0, false, IGNORE_MISSING);
             if ($cm) {
                 self::delete_lesson_user_data((int)$cm->instance, $userid);
             }
@@ -203,17 +203,17 @@ class provider implements
         if (!$context instanceof context_module) {
             return;
         }
-        $cm = get_coursemodule_from_id('videolesson', $context->instanceid, 0, false, IGNORE_MISSING);
+        $cm = get_coursemodule_from_id('lessonvideo', $context->instanceid, 0, false, IGNORE_MISSING);
         if (!$cm) {
             return;
         }
-        $sql = "SELECT p.userid FROM {videolesson_progress} p WHERE p.videolessonid = :lesson1
-                UNION SELECT cp.userid FROM {videolesson_chprogress} cp
-                      JOIN {videolesson_chapters} c ON c.id = cp.chapterid WHERE c.videolessonid = :lesson2
-                UNION SELECT ip.userid FROM {videolesson_itemprogress} ip
-                      JOIN {videolesson_items} i ON i.id = ip.itemid
-                      JOIN {videolesson_chapters} c2 ON c2.id = i.chapterid WHERE c2.videolessonid = :lesson3
-                UNION SELECT s.userid FROM {videolesson_sessions} s WHERE s.videolessonid = :lesson4";
+        $sql = "SELECT p.userid FROM {lessonvideo_progress} p WHERE p.lessonvideoid = :lesson1
+                UNION SELECT cp.userid FROM {lessonvideo_chprogress} cp
+                      JOIN {lessonvideo_chapters} c ON c.id = cp.chapterid WHERE c.lessonvideoid = :lesson2
+                UNION SELECT ip.userid FROM {lessonvideo_itemprogress} ip
+                      JOIN {lessonvideo_items} i ON i.id = ip.itemid
+                      JOIN {lessonvideo_chapters} c2 ON c2.id = i.chapterid WHERE c2.lessonvideoid = :lesson3
+                UNION SELECT s.userid FROM {lessonvideo_sessions} s WHERE s.lessonvideoid = :lesson4";
         $userlist->add_from_sql('userid', $sql, [
             'lesson1' => $cm->instance,
             'lesson2' => $cm->instance,
@@ -233,7 +233,7 @@ class provider implements
         if (!$context instanceof context_module) {
             return;
         }
-        $cm = get_coursemodule_from_id('videolesson', $context->instanceid, 0, false, IGNORE_MISSING);
+        $cm = get_coursemodule_from_id('lessonvideo', $context->instanceid, 0, false, IGNORE_MISSING);
         if (!$cm) {
             return;
         }
@@ -251,36 +251,36 @@ class provider implements
      */
     private static function delete_lesson_user_data(int $lessonid, ?int $userid): void {
         global $DB;
-        $chapterids = $DB->get_fieldset_select('videolesson_chapters', 'id', 'videolessonid = ?', [$lessonid]);
+        $chapterids = $DB->get_fieldset_select('lessonvideo_chapters', 'id', 'lessonvideoid = ?', [$lessonid]);
         if ($chapterids) {
             [$chaptersql, $chapterparams] = $DB->get_in_or_equal($chapterids, SQL_PARAMS_NAMED, 'ch');
             $itemids = $DB->get_fieldset_sql(
-                "SELECT id FROM {videolesson_items} WHERE chapterid {$chaptersql}",
+                "SELECT id FROM {lessonvideo_items} WHERE chapterid {$chaptersql}",
                 $chapterparams
             );
             if ($itemids) {
                 [$itemsql, $itemparams] = $DB->get_in_or_equal($itemids, SQL_PARAMS_NAMED, 'it');
                 if ($userid === null) {
-                    $DB->delete_records_select('videolesson_itemprogress', "itemid {$itemsql}", $itemparams);
+                    $DB->delete_records_select('lessonvideo_itemprogress', "itemid {$itemsql}", $itemparams);
                 } else {
                     $itemparams['userid'] = $userid;
-                    $DB->delete_records_select('videolesson_itemprogress', "itemid {$itemsql} AND userid = :userid", $itemparams);
+                    $DB->delete_records_select('lessonvideo_itemprogress', "itemid {$itemsql} AND userid = :userid", $itemparams);
                 }
             }
             if ($userid === null) {
-                $DB->delete_records_select('videolesson_chprogress', "chapterid {$chaptersql}", $chapterparams);
+                $DB->delete_records_select('lessonvideo_chprogress', "chapterid {$chaptersql}", $chapterparams);
             } else {
                 $chapterparams['userid'] = $userid;
-                $DB->delete_records_select('videolesson_chprogress',
+                $DB->delete_records_select('lessonvideo_chprogress',
                     "chapterid {$chaptersql} AND userid = :userid", $chapterparams);
             }
         }
         if ($userid === null) {
-            $DB->delete_records('videolesson_sessions', ['videolessonid' => $lessonid]);
-            $DB->delete_records('videolesson_progress', ['videolessonid' => $lessonid]);
+            $DB->delete_records('lessonvideo_sessions', ['lessonvideoid' => $lessonid]);
+            $DB->delete_records('lessonvideo_progress', ['lessonvideoid' => $lessonid]);
         } else {
-            $DB->delete_records('videolesson_sessions', ['videolessonid' => $lessonid, 'userid' => $userid]);
-            $DB->delete_records('videolesson_progress', ['videolessonid' => $lessonid, 'userid' => $userid]);
+            $DB->delete_records('lessonvideo_sessions', ['lessonvideoid' => $lessonid, 'userid' => $userid]);
+            $DB->delete_records('lessonvideo_progress', ['lessonvideoid' => $lessonid, 'userid' => $userid]);
         }
     }
 }

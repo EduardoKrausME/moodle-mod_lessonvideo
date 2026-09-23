@@ -17,11 +17,11 @@
 /**
  * Restore structure for Video Lesson.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_videolesson_activity_structure_step extends restore_activity_structure_step {
+class restore_lessonvideo_activity_structure_step extends restore_activity_structure_step {
     /**
      * Defines restore paths.
      *
@@ -29,87 +29,87 @@ class restore_videolesson_activity_structure_step extends restore_activity_struc
      */
     protected function define_structure(): array {
         $paths = [
-            new restore_path_element('videolesson', '/activity/videolesson'),
-            new restore_path_element('videolesson_chapter', '/activity/videolesson/chapters/chapter'),
-            new restore_path_element('videolesson_item', '/activity/videolesson/chapters/chapter/items/item'),
+            new restore_path_element('lessonvideo', '/activity/lessonvideo'),
+            new restore_path_element('lessonvideo_chapter', '/activity/lessonvideo/chapters/chapter'),
+            new restore_path_element('lessonvideo_item', '/activity/lessonvideo/chapters/chapter/items/item'),
         ];
         if ($this->get_setting_value('userinfo')) {
-            $paths[] = new restore_path_element('videolesson_progress',
-                '/activity/videolesson/progresses/progress');
-            $paths[] = new restore_path_element('videolesson_chprogress',
-                '/activity/videolesson/chapters/chapter/chapterprogresses/chapterprogress');
-            $paths[] = new restore_path_element('videolesson_itemprogress',
-                '/activity/videolesson/chapters/chapter/items/item/itemprogresses/itemprogress');
+            $paths[] = new restore_path_element('lessonvideo_progress',
+                '/activity/lessonvideo/progresses/progress');
+            $paths[] = new restore_path_element('lessonvideo_chprogress',
+                '/activity/lessonvideo/chapters/chapter/chapterprogresses/chapterprogress');
+            $paths[] = new restore_path_element('lessonvideo_itemprogress',
+                '/activity/lessonvideo/chapters/chapter/items/item/itemprogresses/itemprogress');
         }
         return $this->prepare_activity_structure($paths);
     }
 
     /**
-     * process_videolesson
+     * process_lessonvideo
      *
      * @param $data
      * @return void
      * @throws dml_exception
      */
-    protected function process_videolesson($data): void {
+    protected function process_lessonvideo($data): void {
         global $DB;
         $data = (object)$data;
         $oldid = $data->id;
         $data->course = $this->get_courseid();
         $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
-        $newid = $DB->insert_record('videolesson', $data);
+        $newid = $DB->insert_record('lessonvideo', $data);
         $this->apply_activity_instance($newid);
-        $this->set_mapping('videolesson', $oldid, $newid, true);
+        $this->set_mapping('lessonvideo', $oldid, $newid, true);
     }
 
     /**
-     * process_videolesson_chapter
+     * process_lessonvideo_chapter
      *
      * @param $data
      * @return void
      * @throws dml_exception
      */
-    protected function process_videolesson_chapter($data): void {
+    protected function process_lessonvideo_chapter($data): void {
         global $DB;
         $data = (object)$data;
         $oldid = $data->id;
-        $data->videolessonid = $this->get_new_parentid('videolesson');
+        $data->lessonvideoid = $this->get_new_parentid('lessonvideo');
         $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
-        $newid = $DB->insert_record('videolesson_chapters', $data);
-        $this->set_mapping('videolesson_chapter', $oldid, $newid);
+        $newid = $DB->insert_record('lessonvideo_chapters', $data);
+        $this->set_mapping('lessonvideo_chapter', $oldid, $newid);
     }
 
     /**
-     * process_videolesson_item
+     * process_lessonvideo_item
      *
      * @param $data
      * @return void
      * @throws dml_exception
      */
-    protected function process_videolesson_item($data): void {
+    protected function process_lessonvideo_item($data): void {
         global $DB;
         $data = (object)$data;
         $oldid = $data->id;
-        $data->chapterid = $this->get_new_parentid('videolesson_chapter');
+        $data->chapterid = $this->get_new_parentid('lessonvideo_chapter');
         $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
-        $newid = $DB->insert_record('videolesson_items', $data);
-        $this->set_mapping('videolesson_item', $oldid, $newid, true);
+        $newid = $DB->insert_record('lessonvideo_items', $data);
+        $this->set_mapping('lessonvideo_item', $oldid, $newid, true);
     }
 
     /**
-     * process_videolesson_progress
+     * process_lessonvideo_progress
      *
      * @param $data
      * @return void
      * @throws dml_exception
      */
-    protected function process_videolesson_progress($data): void {
+    protected function process_lessonvideo_progress($data): void {
         global $DB;
         $data = (object)$data;
-        $data->videolessonid = $this->get_new_parentid('videolesson');
+        $data->lessonvideoid = $this->get_new_parentid('lessonvideo');
         $data->userid = $this->get_mappingid('user', $data->userid);
         if (!$data->userid) {
             return;
@@ -117,20 +117,20 @@ class restore_videolesson_activity_structure_step extends restore_activity_struc
         unset($data->id);
         $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
-        $DB->insert_record('videolesson_progress', $data);
+        $DB->insert_record('lessonvideo_progress', $data);
     }
 
     /**
-     * process_videolesson_chprogress
+     * process_lessonvideo_chprogress
      *
      * @param $data
      * @return void
      * @throws dml_exception
      */
-    protected function process_videolesson_chprogress($data): void {
+    protected function process_lessonvideo_chprogress($data): void {
         global $DB;
         $data = (object)$data;
-        $data->chapterid = $this->get_new_parentid('videolesson_chapter');
+        $data->chapterid = $this->get_new_parentid('lessonvideo_chapter');
         $data->userid = $this->get_mappingid('user', $data->userid);
         if (!$data->userid) {
             return;
@@ -138,20 +138,20 @@ class restore_videolesson_activity_structure_step extends restore_activity_struc
         unset($data->id);
         $data->timecompleted = $data->timecompleted ? $this->apply_date_offset($data->timecompleted) : 0;
         $data->timemodified = $this->apply_date_offset($data->timemodified);
-        $DB->insert_record('videolesson_chprogress', $data);
+        $DB->insert_record('lessonvideo_chprogress', $data);
     }
 
     /**
-     * process_videolesson_itemprogress
+     * process_lessonvideo_itemprogress
      *
      * @param $data
      * @return void
      * @throws dml_exception
      */
-    protected function process_videolesson_itemprogress($data): void {
+    protected function process_lessonvideo_itemprogress($data): void {
         global $DB;
         $data = (object)$data;
-        $data->itemid = $this->get_new_parentid('videolesson_item');
+        $data->itemid = $this->get_new_parentid('lessonvideo_item');
         $data->userid = $this->get_mappingid('user', $data->userid);
         if (!$data->userid) {
             return;
@@ -159,7 +159,7 @@ class restore_videolesson_activity_structure_step extends restore_activity_struc
         unset($data->id);
         $data->timecompleted = $data->timecompleted ? $this->apply_date_offset($data->timecompleted) : 0;
         $data->timemodified = $this->apply_date_offset($data->timemodified);
-        $DB->insert_record('videolesson_itemprogress', $data);
+        $DB->insert_record('lessonvideo_itemprogress', $data);
     }
 
     /**
@@ -168,8 +168,8 @@ class restore_videolesson_activity_structure_step extends restore_activity_struc
      * @return void Return value.
      */
     protected function after_execute(): void {
-        $this->add_related_files('mod_videolesson', 'videofile', null);
-        $this->add_related_files('mod_videolesson', 'captions', null);
-        $this->add_related_files('mod_videolesson', 'itemfile', 'videolesson_item');
+        $this->add_related_files('mod_lessonvideo', 'videofile', null);
+        $this->add_related_files('mod_lessonvideo', 'captions', null);
+        $this->add_related_files('mod_lessonvideo', 'itemfile', 'lessonvideo_item');
     }
 }

@@ -17,7 +17,7 @@
 /**
  * Lists Video Lesson activities in a course.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,19 +27,19 @@ require('../../config.php');
 $id = required_param('id', PARAM_INT);
 $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 require_course_login($course);
-$PAGE->set_url('/mod/videolesson/index.php', ['id' => $course->id]);
-$PAGE->set_title(get_string('modulenameplural', 'videolesson'));
+$PAGE->set_url('/mod/lessonvideo/index.php', ['id' => $course->id]);
+$PAGE->set_title(get_string('modulenameplural', 'lessonvideo'));
 $PAGE->set_heading(format_string($course->fullname));
 
-$instances = get_all_instances_in_course('videolesson', $course);
+$instances = get_all_instances_in_course('lessonvideo', $course);
 $rows = [];
 foreach ($instances as $instance) {
     $rows[] = [
         'name' => format_string($instance->name),
-        'url' => (new moodle_url('/mod/videolesson/view.php', ['id' => $instance->coursemodule]))->out(false),
+        'url' => (new moodle_url('/mod/lessonvideo/view.php', ['id' => $instance->coursemodule]))->out(false),
     ];
 }
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('modulenameplural', 'videolesson'));
-echo $OUTPUT->render_from_template('mod_videolesson/index', ['lessons' => $rows, 'haslessons' => !empty($rows)]);
+echo $OUTPUT->heading(get_string('modulenameplural', 'lessonvideo'));
+echo $OUTPUT->render_from_template('mod_lessonvideo/index', ['lessons' => $rows, 'haslessons' => !empty($rows)]);
 echo $OUTPUT->footer();

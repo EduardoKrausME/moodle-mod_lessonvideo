@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/videolesson/db" VERSION="20260920" COMMENT="XMLDB file for Video Lesson"
+<XMLDB PATH="mod/lessonvideo/db" VERSION="20260920" COMMENT="XMLDB file for Video Lesson"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
     <TABLES>
-        <TABLE NAME="videolesson" COMMENT="Video Lesson activity settings">
+        <TABLE NAME="lessonvideo" COMMENT="Video Lesson activity settings">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -34,10 +34,10 @@
                 <INDEX NAME="course-source" UNIQUE="false" FIELDS="course,videosource"/>
             </INDEXES>
         </TABLE>
-        <TABLE NAME="videolesson_chapters" COMMENT="Ordered chapters on the video timeline">
+        <TABLE NAME="lessonvideo_chapters" COMMENT="Ordered chapters on the video timeline">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-                <FIELD NAME="videolessonid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="lessonvideoid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="starttime" TYPE="number" LENGTH="12" DECIMALS="3" NOTNULL="true" DEFAULT="0"
                        SEQUENCE="false"/>
@@ -49,14 +49,14 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-                <KEY NAME="lesson" TYPE="foreign" FIELDS="videolessonid" REFTABLE="videolesson" REFFIELDS="id"/>
+                <KEY NAME="lesson" TYPE="foreign" FIELDS="lessonvideoid" REFTABLE="lessonvideo" REFFIELDS="id"/>
             </KEYS>
             <INDEXES>
-                <INDEX NAME="lesson-order" UNIQUE="false" FIELDS="videolessonid,sortorder"/>
-                <INDEX NAME="lesson-time" UNIQUE="false" FIELDS="videolessonid,starttime"/>
+                <INDEX NAME="lesson-order" UNIQUE="false" FIELDS="lessonvideoid,sortorder"/>
+                <INDEX NAME="lesson-time" UNIQUE="false" FIELDS="lessonvideoid,starttime"/>
             </INDEXES>
         </TABLE>
-        <TABLE NAME="videolesson_items" COMMENT="Complementary content attached to chapters">
+        <TABLE NAME="lessonvideo_items" COMMENT="Complementary content attached to chapters">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -72,16 +72,16 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-                <KEY NAME="chapter" TYPE="foreign" FIELDS="chapterid" REFTABLE="videolesson_chapters" REFFIELDS="id"/>
+                <KEY NAME="chapter" TYPE="foreign" FIELDS="chapterid" REFTABLE="lessonvideo_chapters" REFFIELDS="id"/>
             </KEYS>
             <INDEXES>
                 <INDEX NAME="chapter-order" UNIQUE="false" FIELDS="chapterid,sortorder"/>
             </INDEXES>
         </TABLE>
-        <TABLE NAME="videolesson_progress" COMMENT="Consolidated progress per user and activity">
+        <TABLE NAME="lessonvideo_progress" COMMENT="Consolidated progress per user and activity">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-                <FIELD NAME="videolessonid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="lessonvideoid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="duration" TYPE="number" LENGTH="12" DECIMALS="3" NOTNULL="true" DEFAULT="0"
                        SEQUENCE="false"/>
@@ -98,15 +98,15 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-                <KEY NAME="lesson" TYPE="foreign" FIELDS="videolessonid" REFTABLE="videolesson" REFFIELDS="id"/>
+                <KEY NAME="lesson" TYPE="foreign" FIELDS="lessonvideoid" REFTABLE="lessonvideo" REFFIELDS="id"/>
                 <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
             </KEYS>
             <INDEXES>
-                <INDEX NAME="lesson-user" UNIQUE="true" FIELDS="videolessonid,userid"/>
-                <INDEX NAME="lesson-completed" UNIQUE="false" FIELDS="videolessonid,completed"/>
+                <INDEX NAME="lesson-user" UNIQUE="true" FIELDS="lessonvideoid,userid"/>
+                <INDEX NAME="lesson-completed" UNIQUE="false" FIELDS="lessonvideoid,completed"/>
             </INDEXES>
         </TABLE>
-        <TABLE NAME="videolesson_chprogress" COMMENT="Progress per chapter and user">
+        <TABLE NAME="lessonvideo_chprogress" COMMENT="Progress per chapter and user">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -121,14 +121,14 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-                <KEY NAME="chapter" TYPE="foreign" FIELDS="chapterid" REFTABLE="videolesson_chapters" REFFIELDS="id"/>
+                <KEY NAME="chapter" TYPE="foreign" FIELDS="chapterid" REFTABLE="lessonvideo_chapters" REFFIELDS="id"/>
                 <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
             </KEYS>
             <INDEXES>
                 <INDEX NAME="chapter-user" UNIQUE="true" FIELDS="chapterid,userid"/>
             </INDEXES>
         </TABLE>
-        <TABLE NAME="videolesson_itemprogress" COMMENT="Completion and response state for chapter items">
+        <TABLE NAME="lessonvideo_itemprogress" COMMENT="Completion and response state for chapter items">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -140,17 +140,17 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-                <KEY NAME="item" TYPE="foreign" FIELDS="itemid" REFTABLE="videolesson_items" REFFIELDS="id"/>
+                <KEY NAME="item" TYPE="foreign" FIELDS="itemid" REFTABLE="lessonvideo_items" REFFIELDS="id"/>
                 <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
             </KEYS>
             <INDEXES>
                 <INDEX NAME="item-user" UNIQUE="true" FIELDS="itemid,userid"/>
             </INDEXES>
         </TABLE>
-        <TABLE NAME="videolesson_sessions" COMMENT="Playback sessions used to validate heartbeats">
+        <TABLE NAME="lessonvideo_sessions" COMMENT="Playback sessions used to validate heartbeats">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-                <FIELD NAME="videolessonid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="lessonvideoid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="sessionkey" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="sequence" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -163,11 +163,11 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-                <KEY NAME="lesson" TYPE="foreign" FIELDS="videolessonid" REFTABLE="videolesson" REFFIELDS="id"/>
+                <KEY NAME="lesson" TYPE="foreign" FIELDS="lessonvideoid" REFTABLE="lessonvideo" REFFIELDS="id"/>
                 <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
             </KEYS>
             <INDEXES>
-                <INDEX NAME="session-identity" UNIQUE="true" FIELDS="videolessonid,userid,sessionkey"/>
+                <INDEX NAME="session-identity" UNIQUE="true" FIELDS="lessonvideoid,userid,sessionkey"/>
             </INDEXES>
         </TABLE>
     </TABLES>

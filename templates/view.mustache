@@ -15,33 +15,33 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_videolesson/view
+    @template mod_lessonvideo/view
 
     Example context (json):
     {
         Aqui tem que criar o context em inglês
     }
 }}
-<div class="videolesson" id="mod-videolesson-root">
+<div class="lessonvideo" id="mod-lessonvideo-root">
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
         <div>
             <h2 class="mb-1">{{name}}</h2>
             {{#hasintro}}
-                <div class="videolesson-intro">{{{intro}}}</div>{{/hasintro}}
+                <div class="lessonvideo-intro">{{{intro}}}</div>{{/hasintro}}
         </div>
         <div class="d-flex gap-2">
             {{#canmanage}}<a class="btn btn-secondary" href="{{{manageurl}}}">{{#str}}
-                manage, videolesson{{/str}}</a>{{/canmanage}}
+                manage, lessonvideo{{/str}}</a>{{/canmanage}}
             {{#canviewreport}}<a class="btn btn-secondary" href="{{{reporturl}}}">{{#str}}
-                report, videolesson{{/str}}</a>{{/canviewreport}}
+                report, lessonvideo{{/str}}</a>{{/canviewreport}}
         </div>
     </div>
 
-    <div class="videolesson-layout">
-        <main class="videolesson-main">
-            <div class="videolesson-player-wrap">
+    <div class="lessonvideo-layout">
+        <main class="lessonvideo-main">
+            <div class="lessonvideo-player-wrap">
                 {{#player.ishtml5}}
-                    <video id="videolesson-html5" class="videolesson-video" controls playsinline preload="metadata"
+                    <video id="lessonvideo-html5" class="lessonvideo-video" controls playsinline preload="metadata"
                            src="{{{player.url}}}">
                         {{#player.tracks}}
                             <track kind="subtitles" src="{{{src}}}" srclang="{{srclang}}" label="{{label}}"
@@ -50,48 +50,48 @@
                     </video>
                 {{/player.ishtml5}}
                 {{#player.isyoutube}}
-                    <div id="videolesson-youtube" class="videolesson-provider-player"></div>{{/player.isyoutube}}
+                    <div id="lessonvideo-youtube" class="lessonvideo-provider-player"></div>{{/player.isyoutube}}
                 {{#player.isvimeo}}
-                    <div id="videolesson-vimeo" class="videolesson-provider-player"></div>{{/player.isvimeo}}
+                    <div id="lessonvideo-vimeo" class="lessonvideo-provider-player"></div>{{/player.isvimeo}}
             </div>
 
-            <section class="videolesson-overall card mt-3">
+            <section class="lessonvideo-overall card mt-3">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong>{{#str}}lessonprogress, videolesson{{/str}}</strong>
-                        <span id="videolesson-overall-label">{{progress.percent}}%</span>
+                        <strong>{{#str}}lessonprogress, lessonvideo{{/str}}</strong>
+                        <span id="lessonvideo-overall-label">{{progress.percent}}%</span>
                     </div>
-                    <div class="progress" role="progressbar" aria-label="{{#str}}lessonprogress, videolesson{{/str}}"
+                    <div class="progress" role="progressbar" aria-label="{{#str}}lessonprogress, lessonvideo{{/str}}"
                          aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{progress.percentrounded}}">
-                        <div id="videolesson-overall-bar" class="progress-bar"
+                        <div id="lessonvideo-overall-bar" class="progress-bar"
                              style="width: {{progress.percentrounded}}%"></div>
                     </div>
                     {{#progress.completed}}
-                        <div id="videolesson-complete-message" class="alert alert-success mt-3 mb-0">{{#str}}
-                            completed, videolesson{{/str}}</div>{{/progress.completed}}
+                        <div id="lessonvideo-complete-message" class="alert alert-success mt-3 mb-0">{{#str}}
+                            completed, lessonvideo{{/str}}</div>{{/progress.completed}}
                     {{^progress.completed}}
-                        <div id="videolesson-complete-message" class="alert alert-success mt-3 mb-0 d-none">{{#str}}
-                            completed, videolesson{{/str}}</div>{{/progress.completed}}
+                        <div id="lessonvideo-complete-message" class="alert alert-success mt-3 mb-0 d-none">{{#str}}
+                            completed, lessonvideo{{/str}}</div>{{/progress.completed}}
                 </div>
             </section>
 
             {{#haschapters}}
-                <div class="videolesson-chapter-panels mt-3">
+                <div class="lessonvideo-chapter-panels mt-3">
                     {{#chapters}}
-                        <section class="videolesson-chapter-panel card mb-3 {{^current}}d-none{{/current}}"
+                        <section class="lessonvideo-chapter-panel card mb-3 {{^current}}d-none{{/current}}"
                                  data-chapter-panel="{{id}}">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <div>
-                                    <span class="videolesson-time">{{start}}</span>
+                                    <span class="lessonvideo-time">{{start}}</span>
                                     <strong>{{title}}</strong>
                                     {{#required}}<span class="badge text-bg-primary ms-2">{{#str}}
-                                        required, videolesson{{/str}}</span>{{/required}}
+                                        required, lessonvideo{{/str}}</span>{{/required}}
                                 </div>
-                                <span class="videolesson-panel-status" data-status-for="{{id}}">{{status}}</span>
+                                <span class="lessonvideo-panel-status" data-status-for="{{id}}">{{status}}</span>
                             </div>
                             <div class="card-body">
                                 <div class="d-flex justify-content-between small mb-1">
-                                    <span>{{#str}}chapterprogress, videolesson{{/str}}</span>
+                                    <span>{{#str}}chapterprogress, lessonvideo{{/str}}</span>
                                     <span data-percent-label="{{id}}">{{percent}}%</span>
                                 </div>
                                 <div class="progress mb-3">
@@ -101,73 +101,73 @@
                                 {{#locknext}}
                                     {{^completed}}
                                         <div class="alert alert-info">{{#str}}
-                                            nextchapterlocked, videolesson{{/str}}</div>{{/completed}}
+                                            nextchapterlocked, lessonvideo{{/str}}</div>{{/completed}}
                                 {{/locknext}}
                                 {{^itemscomplete}}
                                     <div class="alert alert-warning">{{#str}}
-                                        requiredcontentpending, videolesson{{/str}}</div>{{/itemscomplete}}
+                                        requiredcontentpending, lessonvideo{{/str}}</div>{{/itemscomplete}}
 
                                 {{#hasitems}}
-                                    <h3 class="h5">{{#str}}chaptercontents, videolesson{{/str}}</h3>
-                                    <div class="videolesson-items">
+                                    <h3 class="h5">{{#str}}chaptercontents, lessonvideo{{/str}}</h3>
+                                    <div class="lessonvideo-items">
                                         {{#items}}
-                                            <article class="videolesson-item border rounded p-3 mb-3"
+                                            <article class="lessonvideo-item border rounded p-3 mb-3"
                                                      data-item="{{id}}">
                                                 <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                                                     <h4 class="h6 mb-0">{{title}}</h4>
                                                     <div>
                                                         {{#required}}<span class="badge text-bg-primary">{{#str}}
-                                                            required, videolesson{{/str}}</span>{{/required}}
+                                                            required, lessonvideo{{/str}}</span>{{/required}}
                                                         {{^required}}<span class="badge text-bg-secondary">{{#str}}
-                                                            optional, videolesson{{/str}}</span>{{/required}}
+                                                            optional, lessonvideo{{/str}}</span>{{/required}}
                                                         <span class="badge text-bg-success {{^completed}}d-none{{/completed}}"
                                                               data-item-completed="{{id}}">{{#str}}
-                                                            completed, videolesson{{/str}}</span>
+                                                            completed, lessonvideo{{/str}}</span>
                                                     </div>
                                                 </div>
                                                 {{#istext}}
-                                                    <div class="videolesson-item-content">{{{html}}}</div>{{/istext}}
+                                                    <div class="lessonvideo-item-content">{{{html}}}</div>{{/istext}}
                                                 {{#isactivity}}
-                                                    <div class="videolesson-item-content videolesson-activity-guidance">{{{html}}}</div>{{/isactivity}}
+                                                    <div class="lessonvideo-item-content lessonvideo-activity-guidance">{{{html}}}</div>{{/isactivity}}
                                                 {{#isimage}}{{#url}}
-                                                    <img class="img-fluid rounded videolesson-image" src="{{{url}}}"
+                                                    <img class="img-fluid rounded lessonvideo-image" src="{{{url}}}"
                                                          alt="{{title}}">{{/url}}{{/isimage}}
                                                 {{#ispdf}}{{#url}}
                                                     <a class="btn btn-outline-primary" target="_blank" rel="noopener"
                                                        href="{{{url}}}">{{#str}}
-                                                        viewpdf, videolesson{{/str}}</a>{{/url}}{{/ispdf}}
+                                                        viewpdf, lessonvideo{{/str}}</a>{{/url}}{{/ispdf}}
                                                 {{#isfile}}{{#url}}
                                                     <a class="btn btn-outline-primary" href="{{{url}}}">{{#str}}
-                                                        downloadfile, videolesson{{/str}}
+                                                        downloadfile, lessonvideo{{/str}}
                                                         : {{filename}}</a>{{/url}}{{/isfile}}
                                                 {{#islink}}{{#url}}
                                                     <a class="btn btn-outline-primary" target="_blank" rel="noopener"
                                                        href="{{{url}}}">{{#str}}
-                                                        openlink, videolesson{{/str}}</a>{{/url}}{{/islink}}
+                                                        openlink, lessonvideo{{/str}}</a>{{/url}}{{/islink}}
                                                 {{#isquestion}}
-                                                    <div class="videolesson-question">{{{html}}}</div>
+                                                    <div class="lessonvideo-question">{{{html}}}</div>
                                                     {{#completed}}
                                                         <div class="mt-2"><strong>{{#str}}
-                                                            questionresponse, videolesson{{/str}}:</strong> {{response}}
+                                                            questionresponse, lessonvideo{{/str}}:</strong> {{response}}
                                                         </div>{{/completed}}
                                                     {{^completed}}
                                                         <label class="form-label mt-2"
-                                                               for="videolesson-response-{{id}}">{{#str}}
-                                                            answer, videolesson{{/str}}</label>
-                                                        <textarea class="form-control" id="videolesson-response-{{id}}"
+                                                               for="lessonvideo-response-{{id}}">{{#str}}
+                                                            answer, lessonvideo{{/str}}</label>
+                                                        <textarea class="form-control" id="lessonvideo-response-{{id}}"
                                                                   data-response-for="{{id}}" rows="3"></textarea>
                                                     {{/completed}}
                                                 {{/isquestion}}
                                                 {{^completed}}
                                                     <div class="mt-3">
                                                         <button type="button"
-                                                                class="btn btn-primary videolesson-complete-item"
+                                                                class="btn btn-primary lessonvideo-complete-item"
                                                                 data-item-id="{{id}}"
                                                                 data-question="{{#isquestion}}1{{/isquestion}}{{^isquestion}}0{{/isquestion}}">
                                                             {{#isquestion}}{{#str}}
-                                                                submitanswer, videolesson{{/str}}{{/isquestion}}
+                                                                submitanswer, lessonvideo{{/str}}{{/isquestion}}
                                                             {{^isquestion}}{{#str}}
-                                                                markcomplete, videolesson{{/str}}{{/isquestion}}
+                                                                markcomplete, lessonvideo{{/str}}{{/isquestion}}
                                                         </button>
                                                     </div>
                                                 {{/completed}}
@@ -181,20 +181,20 @@
                 </div>
             {{/haschapters}}
             {{^haschapters}}
-                <div class="alert alert-info mt-3">{{#str}}nochaptersstudent, videolesson{{/str}}</div>{{/haschapters}}
+                <div class="alert alert-info mt-3">{{#str}}nochaptersstudent, lessonvideo{{/str}}</div>{{/haschapters}}
         </main>
 
-        <aside class="videolesson-sidebar">
-            <div class="card sticky-top videolesson-chapter-card">
-                <div class="card-header"><strong>{{#str}}chapters, videolesson{{/str}}</strong></div>
-                <div class="list-group list-group-flush" id="videolesson-chapter-list">
+        <aside class="lessonvideo-sidebar">
+            <div class="card sticky-top lessonvideo-chapter-card">
+                <div class="card-header"><strong>{{#str}}chapters, lessonvideo{{/str}}</strong></div>
+                <div class="list-group list-group-flush" id="lessonvideo-chapter-list">
                     {{#chapters}}
                         <button type="button"
-                                class="list-group-item list-group-item-action videolesson-chapter-link {{#current}}active{{/current}}"
+                                class="list-group-item list-group-item-action lessonvideo-chapter-link {{#current}}active{{/current}}"
                                 data-chapter-id="{{id}}" data-start="{{startseconds}}" {{#locked}}disabled{{/locked}}>
                             <span class="d-flex justify-content-between align-items-center gap-2">
-                                <span><span class="videolesson-time">{{start}}</span> {{title}}</span>
-                                <span class="videolesson-chapter-status" data-chapter-status="{{id}}">{{status}}</span>
+                                <span><span class="lessonvideo-time">{{start}}</span> {{title}}</span>
+                                <span class="lessonvideo-chapter-status" data-chapter-status="{{id}}">{{status}}</span>
                             </span>
                             <span class="d-block small mt-1"><span
                                     data-sidebar-percent="{{id}}">{{percentrounded}}</span>%</span>
@@ -204,5 +204,5 @@
             </div>
         </aside>
     </div>
-    <script type="application/json" id="videolesson-config">{{{configjson}}}</script>
+    <script type="application/json" id="lessonvideo-config">{{{configjson}}}</script>
 </div>

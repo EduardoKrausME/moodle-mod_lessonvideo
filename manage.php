@@ -17,16 +17,16 @@
 /**
  * Manages lesson chapters and complementary content.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require('../../config.php');
 
-use mod_videolesson\form\chapter_form;
-use mod_videolesson\form\item_form;
-use mod_videolesson\timecode;
+use mod_lessonvideo\form\chapter_form;
+use mod_lessonvideo\form\item_form;
+use mod_lessonvideo\timecode;
 
 $id = required_param('id', PARAM_INT);
 $action = optional_param('action', '', PARAM_ALPHA);
@@ -35,51 +35,51 @@ $itemid = optional_param('itemid', 0, PARAM_INT);
 $deletechapter = optional_param('deletechapter', 0, PARAM_INT);
 $deleteitem = optional_param('deleteitem', 0, PARAM_INT);
 
-$cm = get_coursemodule_from_id('videolesson', $id, 0, false, MUST_EXIST);
+$cm = get_coursemodule_from_id('lessonvideo', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
-$activity = $DB->get_record('videolesson', ['id' => $cm->instance], '*', MUST_EXIST);
+$activity = $DB->get_record('lessonvideo', ['id' => $cm->instance], '*', MUST_EXIST);
 $context = context_module::instance($cm->id);
 require_login($course, true, $cm);
-require_capability('mod/videolesson:managechapters', $context);
+require_capability('mod/lessonvideo:managechapters', $context);
 
-$PAGE->set_url('/mod/videolesson/manage.php', ['id' => $cm->id]);
+$PAGE->set_url('/mod/lessonvideo/manage.php', ['id' => $cm->id]);
 $PAGE->set_context($context);
-$PAGE->set_title(get_string('managechapters', 'videolesson'));
+$PAGE->set_title(get_string('managechapters', 'lessonvideo'));
 $PAGE->set_heading(format_string($course->fullname));
 
 if ($deletechapter) {
     require_sesskey();
-    $chapter = $DB->get_record('videolesson_chapters', ['id' => $deletechapter, 'videolessonid' => $activity->id], '*', MUST_EXIST);
-    $items = $DB->get_records('videolesson_items', ['chapterid' => $chapter->id]);
+    $chapter = $DB->get_record('lessonvideo_chapters', ['id' => $deletechapter, 'lessonvideoid' => $activity->id], '*', MUST_EXIST);
+    $items = $DB->get_records('lessonvideo_items', ['chapterid' => $chapter->id]);
     foreach ($items as $item) {
-        $DB->delete_records('videolesson_itemprogress', ['itemid' => $item->id]);
-        get_file_storage()->delete_area_files($context->id, 'mod_videolesson', 'itemfile', $item->id);
+        $DB->delete_records('lessonvideo_itemprogress', ['itemid' => $item->id]);
+        get_file_storage()->delete_area_files($context->id, 'mod_lessonvideo', 'itemfile', $item->id);
     }
-    $DB->delete_records('videolesson_items', ['chapterid' => $chapter->id]);
-    $DB->delete_records('videolesson_chprogress', ['chapterid' => $chapter->id]);
-    $DB->delete_records('videolesson_chapters', ['id' => $chapter->id]);
-    redirect($PAGE->url, get_string('chapterdeleted', 'videolesson'));
+    $DB->delete_records('lessonvideo_items', ['chapterid' => $chapter->id]);
+    $DB->delete_records('lessonvideo_chprogress', ['chapterid' => $chapter->id]);
+    $DB->delete_records('lessonvideo_chapters', ['id' => $chapter->id]);
+    redirect($PAGE->url, get_string('chapterdeleted', 'lessonvideo'));
 }
 
 if ($deleteitem) {
     require_sesskey();
     $item = $DB->get_record_sql(
         'SELECT i.*
-               FROM {videolesson_items} i
-               JOIN {videolesson_chapters} c ON c.id = i.chapterid
+               FROM {lessonvideo_items} i
+               JOIN {lessonvideo_chapters} c ON c.id = i.chapterid
               WHERE i.id = ?
-                AND c.videolessonid = ?',
+                AND c.lessonvideoid = ?',
         [$deleteitem, $activity->id], MUST_EXIST
     );
-    $DB->delete_records('videolesson_itemprogress', ['itemid' => $item->id]);
-    $DB->delete_records('videolesson_items', ['id' => $item->id]);
-    get_file_storage()->delete_area_files($context->id, 'mod_videolesson', 'itemfile', $item->id);
-    redirect($PAGE->url, get_string('itemdeleted', 'videolesson'));
+    $DB->delete_records('lessonvideo_itemprogress', ['itemid' => $item->id]);
+    $DB->delete_records('lessonvideo_items', ['id' => $item->id]);
+    get_file_storage()->delete_area_files($context->id, 'mod_lessonvideo', 'itemfile', $item->id);
+    redirect($PAGE->url, get_string('itemdeleted', 'lessonvideo'));
 }
 
 if ($action === 'chapter') {
-    $chapter = $chapterid ? $DB->get_record('videolesson_chapters',
-        ['id' => $chapterid, 'videolessonid' => $activity->id], '*', MUST_EXIST) : null;
+    $chapter = $chapterid ? $DB->get_record('lessonvideo_chapters',
+        ['id' => $chapterid, 'lessonvideoid' => $activity->id], '*', MUST_EXIST) : null;
     $form = new chapter_form(null, ['cmid' => $cm->id, 'chapterid' => $chapterid]);
     if ($form->is_cancelled()) {
         redirect($PAGE->url);
@@ -87,7 +87,7 @@ if ($action === 'chapter') {
     if ($data = $form->get_data()) {
         $start = timecode::parse($data->starttimecode);
         $record = (object)[
-            'videolessonid' => $activity->id,
+            'lessonvideoid' => $activity->id,
             'title' => $data->title,
             'starttime' => $start,
             'required' => !empty($data->required) ? 1 : 0,
@@ -97,13 +97,13 @@ if ($action === 'chapter') {
         if ($chapter) {
             $record->id = $chapter->id;
             $record->sortorder = $chapter->sortorder;
-            $DB->update_record('videolesson_chapters', $record);
+            $DB->update_record('lessonvideo_chapters', $record);
         } else {
-            $record->sortorder = $DB->count_records('videolesson_chapters', ['videolessonid' => $activity->id]);
+            $record->sortorder = $DB->count_records('lessonvideo_chapters', ['lessonvideoid' => $activity->id]);
             $record->timecreated = time();
-            $DB->insert_record('videolesson_chapters', $record);
+            $DB->insert_record('lessonvideo_chapters', $record);
         }
-        redirect($PAGE->url, get_string('chaptersaved', 'videolesson'));
+        redirect($PAGE->url, get_string('chaptersaved', 'lessonvideo'));
     }
     if ($chapter) {
         $form->set_data((object)[
@@ -116,15 +116,15 @@ if ($action === 'chapter') {
         ]);
     }
     echo $OUTPUT->header();
-    echo $OUTPUT->heading($chapter ? get_string('editchapter', 'videolesson') : get_string('addchapter', 'videolesson'));
+    echo $OUTPUT->heading($chapter ? get_string('editchapter', 'lessonvideo') : get_string('addchapter', 'lessonvideo'));
     $form->display();
     echo $OUTPUT->footer();
     exit;
 }
 
 if ($action === 'item') {
-    $chapter = $DB->get_record('videolesson_chapters', ['id' => $chapterid, 'videolessonid' => $activity->id], '*', MUST_EXIST);
-    $item = $itemid ? $DB->get_record('videolesson_items', ['id' => $itemid, 'chapterid' => $chapter->id], '*', MUST_EXIST) : null;
+    $chapter = $DB->get_record('lessonvideo_chapters', ['id' => $chapterid, 'lessonvideoid' => $activity->id], '*', MUST_EXIST);
+    $item = $itemid ? $DB->get_record('lessonvideo_items', ['id' => $itemid, 'chapterid' => $chapter->id], '*', MUST_EXIST) : null;
     $form = new item_form(null, ['cmid' => $cm->id, 'chapterid' => $chapter->id, 'itemid' => $itemid]);
     if ($form->is_cancelled()) {
         redirect($PAGE->url);
@@ -143,22 +143,22 @@ if ($action === 'item') {
         if ($item) {
             $record->id = $item->id;
             $record->sortorder = $item->sortorder;
-            $DB->update_record('videolesson_items', $record);
+            $DB->update_record('lessonvideo_items', $record);
             $savedid = $item->id;
         } else {
-            $record->sortorder = $DB->count_records('videolesson_items', ['chapterid' => $chapter->id]);
+            $record->sortorder = $DB->count_records('lessonvideo_items', ['chapterid' => $chapter->id]);
             $record->timecreated = time();
-            $savedid = $DB->insert_record('videolesson_items', $record);
+            $savedid = $DB->insert_record('lessonvideo_items', $record);
         }
         if (isset($data->itemfile)) {
             file_save_draft_area_files((int)$data->itemfile, $context->id,
-                'mod_videolesson', 'itemfile', $savedid, ['subdirs' => 0, 'maxfiles' => 1]);
+                'mod_lessonvideo', 'itemfile', $savedid, ['subdirs' => 0, 'maxfiles' => 1]);
         }
-        redirect($PAGE->url, get_string('itemsaved', 'videolesson'));
+        redirect($PAGE->url, get_string('itemsaved', 'lessonvideo'));
     }
     if ($item) {
         $draftid = file_get_submitted_draft_itemid('itemfile');
-        file_prepare_draft_area($draftid, $context->id, 'mod_videolesson', 'itemfile', $item->id, ['subdirs' => 0]);
+        file_prepare_draft_area($draftid, $context->id, 'mod_lessonvideo', 'itemfile', $item->id, ['subdirs' => 0]);
         $form->set_data((object)[
             'id' => $cm->id,
             'chapterid' => $chapter->id,
@@ -172,28 +172,28 @@ if ($action === 'item') {
         ]);
     }
     echo $OUTPUT->header();
-    echo $OUTPUT->heading($item ? get_string('edititem', 'videolesson') : get_string('additem', 'videolesson'));
+    echo $OUTPUT->heading($item ? get_string('edititem', 'lessonvideo') : get_string('additem', 'lessonvideo'));
     echo $OUTPUT->heading(format_string($chapter->title), 3);
     $form->display();
     echo $OUTPUT->footer();
     exit;
 }
 
-$chapters = array_values($DB->get_records('videolesson_chapters',
-    ['videolessonid' => $activity->id], 'starttime ASC, sortorder ASC, id ASC'));
+$chapters = array_values($DB->get_records('lessonvideo_chapters',
+    ['lessonvideoid' => $activity->id], 'starttime ASC, sortorder ASC, id ASC'));
 $rows = [];
 foreach ($chapters as $chapter) {
-    $items = $DB->get_records('videolesson_items', ['chapterid' => $chapter->id], 'sortorder ASC, id ASC');
+    $items = $DB->get_records('lessonvideo_items', ['chapterid' => $chapter->id], 'sortorder ASC, id ASC');
     $itemdata = [];
     foreach ($items as $item) {
         $itemdata[] = [
             'title' => format_string($item->title),
-            'type' => get_string('itemtype' . $item->type, 'videolesson'),
+            'type' => get_string('itemtype' . $item->type, 'lessonvideo'),
             'required' => !empty($item->required),
-            'editurl' => (new moodle_url('/mod/videolesson/manage.php', [
+            'editurl' => (new moodle_url('/mod/lessonvideo/manage.php', [
                 'id' => $cm->id, 'action' => 'item', 'chapterid' => $chapter->id, 'itemid' => $item->id,
             ]))->out(false),
-            'deleteurl' => (new moodle_url('/mod/videolesson/manage.php', [
+            'deleteurl' => (new moodle_url('/mod/lessonvideo/manage.php', [
                 'id' => $cm->id, 'deleteitem' => $item->id, 'sesskey' => sesskey(),
             ]))->out(false),
         ];
@@ -206,11 +206,11 @@ foreach ($chapters as $chapter) {
         'locknext' => !empty($chapter->locknext),
         'items' => $itemdata,
         'hasitems' => !empty($itemdata),
-        'editurl' => (new moodle_url('/mod/videolesson/manage.php',
+        'editurl' => (new moodle_url('/mod/lessonvideo/manage.php',
             ['id' => $cm->id, 'action' => 'chapter', 'chapterid' => $chapter->id]))->out(false),
-        'deleteurl' => (new moodle_url('/mod/videolesson/manage.php',
+        'deleteurl' => (new moodle_url('/mod/lessonvideo/manage.php',
             ['id' => $cm->id, 'deletechapter' => $chapter->id, 'sesskey' => sesskey()]))->out(false),
-        'additemurl' => (new moodle_url('/mod/videolesson/manage.php',
+        'additemurl' => (new moodle_url('/mod/lessonvideo/manage.php',
             ['id' => $cm->id, 'action' => 'item', 'chapterid' => $chapter->id]))->out(false),
     ];
 }
@@ -218,10 +218,10 @@ $data = [
     'name' => format_string($activity->name),
     'chapters' => $rows,
     'haschapters' => !empty($rows),
-    'addchapterurl' => (new moodle_url('/mod/videolesson/manage.php', ['id' => $cm->id, 'action' => 'chapter']))->out(false),
-    'viewurl' => (new moodle_url('/mod/videolesson/view.php', ['id' => $cm->id]))->out(false),
+    'addchapterurl' => (new moodle_url('/mod/lessonvideo/manage.php', ['id' => $cm->id, 'action' => 'chapter']))->out(false),
+    'viewurl' => (new moodle_url('/mod/lessonvideo/view.php', ['id' => $cm->id]))->out(false),
 ];
 
 echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('mod_videolesson/manage', $data);
+echo $OUTPUT->render_from_template('mod_lessonvideo/manage', $data);
 echo $OUTPUT->footer();

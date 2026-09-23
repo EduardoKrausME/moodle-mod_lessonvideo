@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_videolesson;
+namespace mod_lessonvideo;
 
 use context_module;
 use moodle_url;
@@ -23,7 +23,7 @@ use stdClass;
 /**
  * Prepares complementary chapter content for Mustache templates.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,7 +39,7 @@ class item_presenter {
     public static function build(stdClass $item, context_module $context, int $userid): array {
         global $DB;
 
-        $progress = $DB->get_record('videolesson_itemprogress', [
+        $progress = $DB->get_record('lessonvideo_itemprogress', [
             'itemid' => $item->id,
             'userid' => $userid,
         ]);
@@ -78,7 +78,7 @@ class item_presenter {
                 $data['filename'] = s($file->get_filename());
                 $data['url'] = moodle_url::make_pluginfile_url(
                     $context->id,
-                    'mod_videolesson',
+                    'mod_lessonvideo',
                     'itemfile',
                     (int)$item->id,
                     $file->get_filepath(),
@@ -100,7 +100,7 @@ class item_presenter {
     private static function first_file(context_module $context, int $itemid) {
         $files = get_file_storage()->get_area_files(
             $context->id,
-            'mod_videolesson',
+            'mod_lessonvideo',
             'itemfile',
             $itemid,
             'filename',

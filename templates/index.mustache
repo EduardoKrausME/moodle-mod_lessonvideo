@@ -15,19 +15,19 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_videolesson/index
+    @template mod_lessonvideo/index
 
     Example context (json):
     {
         Aqui tem que criar o context em inglês
     }
 }}
-<div class="videolesson-index">
+<div class="lessonvideo-index">
     {{#haslessons}}
         <div class="list-group">
             {{#lessons}}<a class="list-group-item list-group-item-action" href="{{{url}}}">{{name}}</a>{{/lessons}}
         </div>
     {{/haslessons}}
     {{^haslessons}}
-        <div class="alert alert-info">{{#str}}nolessons, videolesson{{/str}}</div>{{/haslessons}}
+        <div class="alert alert-info">{{#str}}nolessons, lessonvideo{{/str}}</div>{{/haslessons}}
 </div>

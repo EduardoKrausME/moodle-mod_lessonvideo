@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_videolesson\completion;
+namespace mod_lessonvideo\completion;
 
 use core_completion\activity_custom_completion;
 
 /**
  * Custom completion implementation for Video Lesson.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -35,8 +35,8 @@ class custom_completion extends activity_custom_completion {
     public function get_state(string $rule): int {
         global $DB;
         $this->validate_rule($rule);
-        $progress = $DB->get_record('videolesson_progress', [
-            'videolessonid' => $this->cm->instance,
+        $progress = $DB->get_record('lessonvideo_progress', [
+            'lessonvideoid' => $this->cm->instance,
             'userid' => $this->userid,
         ]);
         return ($progress && !empty($progress->completed)) ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
@@ -57,7 +57,7 @@ class custom_completion extends activity_custom_completion {
      * @return array Return value.
      */
     public function get_custom_rule_descriptions(): array {
-        return ['completionchapters' => get_string('completiondetail:chapters', 'videolesson')];
+        return ['completionchapters' => get_string('completiondetail:chapters', 'lessonvideo')];
     }
 
     /**

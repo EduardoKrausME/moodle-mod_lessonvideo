@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_videolesson;
+namespace mod_lessonvideo;
 
 use context_module;
 use moodle_url;
@@ -23,7 +23,7 @@ use stdClass;
 /**
  * Builds player configuration from activity settings and protected files.
  *
- * @package mod_videolesson
+ * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -71,14 +71,14 @@ class player_config {
      * @return string
      */
     private static function first_file_url(context_module $context, string $filearea): string {
-        $files = get_file_storage()->get_area_files($context->id, 'mod_videolesson', $filearea, 0, 'filename', false);
+        $files = get_file_storage()->get_area_files($context->id, 'mod_lessonvideo', $filearea, 0, 'filename', false);
         if (!$files) {
             return '';
         }
         $file = reset($files);
         return moodle_url::make_pluginfile_url(
             $context->id,
-            'mod_videolesson',
+            'mod_lessonvideo',
             $filearea,
             0,
             $file->get_filepath(),
@@ -94,7 +94,7 @@ class player_config {
      */
     private static function caption_tracks(context_module $context): array {
         $tracks = [];
-        $files = get_file_storage()->get_area_files($context->id, 'mod_videolesson', 'captions', 0, 'filename', false);
+        $files = get_file_storage()->get_area_files($context->id, 'mod_lessonvideo', 'captions', 0, 'filename', false);
         foreach ($files as $file) {
             $filename = $file->get_filename();
             if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) !== 'vtt') {
@@ -106,7 +106,7 @@ class player_config {
             $tracks[] = [
                 'src' => moodle_url::make_pluginfile_url(
                     $context->id,
-                    'mod_videolesson',
+                    'mod_lessonvideo',
                     'captions',
                     0,
                     $file->get_filepath(),

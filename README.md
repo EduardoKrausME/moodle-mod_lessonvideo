@@ -1,4 +1,4 @@
-# Video Lesson (`mod_videolesson`)
+# Video Lesson (`mod_lessonvideo`)
 
 Video Lesson turns one video into a structured Moodle lesson divided into chapters. Each chapter has independent viewing
 progress and can contain complementary material such as text, images, PDFs, files, links, questions, and activity
@@ -36,9 +36,9 @@ playback, source handling, captions, reporting, gradebook integration, and compl
 
 ## Installation
 
-Copy the `videolesson` directory to:
+Copy the `lessonvideo` directory to:
 
-`mod/videolesson`
+`mod/lessonvideo`
 
 Then visit **Site administration > Notifications** and complete the Moodle installation process.
 

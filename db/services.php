@@ -17,7 +17,7 @@
 /**
  * External services for Video Lesson.
  *
- * @package   mod_videolesson
+ * @package   mod_lessonvideo
  * @copyright 2026 Eduardo Kraus
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,20 +25,20 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'mod_videolesson_update_progress' => [
-        'classname' => '\\mod_videolesson\\external\\update_progress',
+    'mod_lessonvideo_update_progress' => [
+        'classname' => '\\mod_lessonvideo\\external\\update_progress',
         'methodname' => 'execute',
         'description' => 'Stores validated video playback progress and returns chapter state.',
         'type' => 'write',
         'ajax' => true,
-        'capabilities' => 'mod/videolesson:view',
+        'capabilities' => 'mod/lessonvideo:view',
     ],
-    'mod_videolesson_complete_item' => [
-        'classname' => '\\mod_videolesson\\external\\complete_item',
+    'mod_lessonvideo_complete_item' => [
+        'classname' => '\\mod_lessonvideo\\external\\complete_item',
         'methodname' => 'execute',
         'description' => 'Completes a chapter content item or stores a question response.',
         'type' => 'write',
         'ajax' => true,
-        'capabilities' => 'mod/videolesson:view',
+        'capabilities' => 'mod/lessonvideo:view',
     ],
 ];

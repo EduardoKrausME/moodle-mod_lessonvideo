@@ -17,7 +17,7 @@
 /**
  * Activity settings form for Video Lesson.
  *
- * @package   mod_videolesson
+ * @package   mod_lessonvideo
  * @copyright 2026 Eduardo Kraus
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
 /**
  * Video Lesson activity form.
  */
-class mod_videolesson_mod_form extends moodleform_mod {
+class mod_lessonvideo_mod_form extends moodleform_mod {
     /**
      * Defines activity fields.
      *
@@ -40,46 +40,46 @@ class mod_videolesson_mod_form extends moodleform_mod {
         $mform = $this->_form;
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
-        $mform->addElement('text', 'name', get_string('videolessonname', 'videolesson'), ['size' => 64]);
+        $mform->addElement('text', 'name', get_string('lessonvideoname', 'lessonvideo'), ['size' => 64]);
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
         $this->standard_intro_elements();
 
-        $mform->addElement('html', '<h3>' . get_string('videosettings', 'videolesson') . '</h3>');
-        $mform->addElement('select', 'videosource', get_string('videosource', 'videolesson'), [
-            'upload' => get_string('sourceupload', 'videolesson'),
-            'url' => get_string('sourceurl', 'videolesson'),
-            'youtube' => get_string('sourceyoutube', 'videolesson'),
-            'vimeo' => get_string('sourcevimeo', 'videolesson'),
+        $mform->addElement('html', '<h3>' . get_string('videosettings', 'lessonvideo') . '</h3>');
+        $mform->addElement('select', 'videosource', get_string('videosource', 'lessonvideo'), [
+            'upload' => get_string('sourceupload', 'lessonvideo'),
+            'url' => get_string('sourceurl', 'lessonvideo'),
+            'youtube' => get_string('sourceyoutube', 'lessonvideo'),
+            'vimeo' => get_string('sourcevimeo', 'lessonvideo'),
         ]);
         $mform->setDefault('videosource', 'upload');
 
-        $mform->addElement('filemanager', 'videofile', get_string('videofile', 'videolesson'), null, [
+        $mform->addElement('filemanager', 'videofile', get_string('videofile', 'lessonvideo'), null, [
             'subdirs' => 0,
             'accepted_types' => ['video'],
         ]);
         $mform->hideIf('videofile', 'videosource', 'neq', 'upload');
 
-        $mform->addElement('url', 'videourl', get_string('videourl', 'videolesson'), ['size' => 64], ['usefilepicker' => false]);
+        $mform->addElement('url', 'videourl', get_string('videourl', 'lessonvideo'), ['size' => 64], ['usefilepicker' => false]);
         $mform->setType('videourl', PARAM_URL);
         $mform->hideIf('videourl', 'videosource', 'eq', 'upload');
 
-        $mform->addElement('filemanager', 'captions', get_string('captions', 'videolesson'), null, [
+        $mform->addElement('filemanager', 'captions', get_string('captions', 'lessonvideo'), null, [
             'subdirs' => 0,
             'maxfiles' => 20,
             'accepted_types' => ['.vtt'],
         ]);
-        $mform->addHelpButton('captions', 'captions', 'videolesson');
+        $mform->addHelpButton('captions', 'captions', 'lessonvideo');
 
-        $mform->addElement('select', 'resumeplayback', get_string('resumeplayback', 'videolesson'), [
-            1 => get_string('resumeautomatic', 'videolesson'),
-            0 => get_string('resumefromstart', 'videolesson'),
+        $mform->addElement('select', 'resumeplayback', get_string('resumeplayback', 'lessonvideo'), [
+            1 => get_string('resumeautomatic', 'lessonvideo'),
+            0 => get_string('resumefromstart', 'lessonvideo'),
         ]);
         $mform->setDefault('resumeplayback', 1);
-        $mform->addElement('selectyesno', 'allowseek', get_string('allowseek', 'videolesson'));
+        $mform->addElement('selectyesno', 'allowseek', get_string('allowseek', 'lessonvideo'));
         $mform->setDefault('allowseek', 1);
-        $mform->addElement('select', 'maxplaybackrate', get_string('maxplaybackrate', 'videolesson'), [
-            '0' => get_string('nolimit', 'videolesson'),
+        $mform->addElement('select', 'maxplaybackrate', get_string('maxplaybackrate', 'lessonvideo'), [
+            '0' => get_string('nolimit', 'lessonvideo'),
             '1' => '1x',
             '1.25' => '1.25x',
             '1.5' => '1.5x',
@@ -88,18 +88,18 @@ class mod_videolesson_mod_form extends moodleform_mod {
         ]);
         $mform->setDefault('maxplaybackrate', 0);
 
-        $mform->addElement('html', '<h3>' . get_string('progresssettings', 'videolesson') . '</h3>');
-        $mform->addElement('text', 'chapterpercent', get_string('chapterpercent', 'videolesson'), ['size' => 5]);
+        $mform->addElement('html', '<h3>' . get_string('progresssettings', 'lessonvideo') . '</h3>');
+        $mform->addElement('text', 'chapterpercent', get_string('chapterpercent', 'lessonvideo'), ['size' => 5]);
         $mform->setType('chapterpercent', PARAM_INT);
         $mform->setDefault('chapterpercent', 90);
         $mform->addRule('chapterpercent', null, 'numeric', null, 'client');
 
-        $mform->addElement('select', 'completionmode', get_string('completionmode', 'videolesson'), [
-            'required' => get_string('completionmoderequired', 'videolesson'),
-            'percent' => get_string('completionmodepercent', 'videolesson'),
+        $mform->addElement('select', 'completionmode', get_string('completionmode', 'lessonvideo'), [
+            'required' => get_string('completionmoderequired', 'lessonvideo'),
+            'percent' => get_string('completionmodepercent', 'lessonvideo'),
         ]);
         $mform->setDefault('completionmode', 'required');
-        $mform->addElement('text', 'completionpercent', get_string('completionpercent', 'videolesson'), ['size' => 5]);
+        $mform->addElement('text', 'completionpercent', get_string('completionpercent', 'lessonvideo'), ['size' => 5]);
         $mform->setType('completionpercent', PARAM_INT);
         $mform->setDefault('completionpercent', 100);
         $mform->addRule('completionpercent', null, 'numeric', null, 'client');
@@ -122,14 +122,14 @@ class mod_videolesson_mod_form extends moodleform_mod {
         $errors = parent::validation($data, $files);
         foreach (['chapterpercent', 'completionpercent'] as $field) {
             if (isset($data[$field]) && ((int)$data[$field] < 1 || (int)$data[$field] > 100)) {
-                $errors[$field] = get_string('errorpercent', 'videolesson');
+                $errors[$field] = get_string('errorpercent', 'lessonvideo');
             }
         }
         if (($data['videosource'] ?? '') === 'upload') {
             $draftid = (int)($data['videofile'] ?? 0);
             $draftinfo = $draftid ? file_get_draft_area_info($draftid) : ['filecount' => 0];
             if (empty($draftinfo['filecount'])) {
-                $errors['videofile'] = get_string('videofilerequired', 'videolesson');
+                $errors['videofile'] = get_string('videofilerequired', 'lessonvideo');
             }
         } else if (empty($data['videourl'])) {
             $errors['videourl'] = get_string('required');
@@ -138,18 +138,18 @@ class mod_videolesson_mod_form extends moodleform_mod {
             !preg_match(
                 '~(?:youtu\\.be/|youtube\\.com/(?:watch\\?v=|embed/))([A-Za-z0-9_-]{6,})~',
                 (string)($data['videourl'] ?? ''))) {
-            $errors['videourl'] = get_string('invalidyoutube', 'videolesson');
+            $errors['videourl'] = get_string('invalidyoutube', 'lessonvideo');
         }
         if (($data['videosource'] ?? '') === 'vimeo' &&
             !preg_match('~vimeo\\.com/(?:video/)?([0-9]+)~', (string)($data['videourl'] ?? ''))) {
-            $errors['videourl'] = get_string('invalidvimeo', 'videolesson');
+            $errors['videourl'] = get_string('invalidvimeo', 'lessonvideo');
         }
         foreach (['videofile'] as $field) {
             $draftid = (int)($data[$field] ?? 0);
             if ($draftid > 0) {
                 $draftinfo = file_get_draft_area_info($draftid);
                 if ((int)$draftinfo['filecount'] > 1) {
-                    $errors[$field] = get_string('errormaxfiles', 'videolesson');
+                    $errors[$field] = get_string('errormaxfiles', 'lessonvideo');
                 }
             }
         }
@@ -164,14 +164,14 @@ class mod_videolesson_mod_form extends moodleform_mod {
      */
     public function data_preprocessing(&$defaultvalues): void {
         if (array_key_exists('completionchapters', $defaultvalues)) {
-            $defaultvalues['completionchapters_videolesson'] = $defaultvalues['completionchapters'];
+            $defaultvalues['completionchapters_lessonvideo'] = $defaultvalues['completionchapters'];
         }
         if (empty($this->current->instance)) {
             return;
         }
         foreach (['videofile', 'captions'] as $area) {
             $draftid = file_get_submitted_draft_itemid($area);
-            file_prepare_draft_area($draftid, $this->context->id, 'mod_videolesson', $area, 0, ['subdirs' => 0]);
+            file_prepare_draft_area($draftid, $this->context->id, 'mod_lessonvideo', $area, 0, ['subdirs' => 0]);
             $defaultvalues[$area] = $draftid;
         }
     }
@@ -183,8 +183,8 @@ class mod_videolesson_mod_form extends moodleform_mod {
      */
     public function add_completion_rules(): array {
         $mform = $this->_form;
-        $field = 'completionchapters_videolesson';
-        $mform->addElement('advcheckbox', $field, get_string('completionchapters', 'videolesson'));
+        $field = 'completionchapters_lessonvideo';
+        $mform->addElement('advcheckbox', $field, get_string('completionchapters', 'lessonvideo'));
         $mform->setDefault($field, 1);
         return [$field];
     }
@@ -196,7 +196,7 @@ class mod_videolesson_mod_form extends moodleform_mod {
      * @return bool
      */
     public function completion_rule_enabled($data): bool {
-        return !empty($data['completionchapters_videolesson']);
+        return !empty($data['completionchapters_lessonvideo']);
     }
 
     /**
@@ -209,9 +209,9 @@ class mod_videolesson_mod_form extends moodleform_mod {
         if (!$data) {
             return $data;
         }
-        if (property_exists($data, 'completionchapters_videolesson')) {
-            $data->completionchapters = (int)$data->completionchapters_videolesson;
-            unset($data->completionchapters_videolesson);
+        if (property_exists($data, 'completionchapters_lessonvideo')) {
+            $data->completionchapters = (int)$data->completionchapters_lessonvideo;
+            unset($data->completionchapters_lessonvideo);
         }
         return $data;
     }

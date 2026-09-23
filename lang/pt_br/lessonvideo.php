@@ -19,7 +19,7 @@
 /**
  * Strings em português do Brasil para Video Lesson.
  *
- * @package   mod_videolesson
+ * @package   mod_lessonvideo
  * @copyright 2026 Eduardo Kraus
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 ou posterior
  */
@@ -122,16 +122,16 @@ $string['optional'] = 'Opcional';
 $string['overallprogress'] = 'Progresso geral';
 $string['pluginadministration'] = 'Administração do Video Lesson';
 $string['pluginname'] = 'Video Lesson';
-$string['privacy:metadata:videolesson_chprogress'] = 'Armazena o progresso de cada capítulo.';
-$string['privacy:metadata:videolesson_itemprogress'] = 'Armazena conclusão e respostas dos conteúdos complementares dos capítulos.';
-$string['privacy:metadata:videolesson_progress'] = 'Armazena o progresso geral de reprodução de cada aluno em uma Video Lesson.';
-$string['privacy:metadata:videolesson_progress:completed'] = 'Se os requisitos da aula foram concluídos.';
-$string['privacy:metadata:videolesson_progress:lastposition'] = 'A última posição validada do vídeo.';
-$string['privacy:metadata:videolesson_progress:percent'] = 'A porcentagem geral calculada da aula.';
-$string['privacy:metadata:videolesson_progress:totalwatchtime'] = 'O tempo de visualização validado.';
-$string['privacy:metadata:videolesson_progress:userid'] = 'O usuário cujo progresso é armazenado.';
-$string['privacy:metadata:videolesson_progress:watchedsegments'] = 'Os intervalos validados do vídeo assistidos pelo usuário.';
-$string['privacy:metadata:videolesson_sessions'] = 'Armazena dados mínimos de sessão usados para validar o progresso de reprodução.';
+$string['privacy:metadata:lessonvideo_chprogress'] = 'Armazena o progresso de cada capítulo.';
+$string['privacy:metadata:lessonvideo_itemprogress'] = 'Armazena conclusão e respostas dos conteúdos complementares dos capítulos.';
+$string['privacy:metadata:lessonvideo_progress'] = 'Armazena o progresso geral de reprodução de cada aluno em uma Video Lesson.';
+$string['privacy:metadata:lessonvideo_progress:completed'] = 'Se os requisitos da aula foram concluídos.';
+$string['privacy:metadata:lessonvideo_progress:lastposition'] = 'A última posição validada do vídeo.';
+$string['privacy:metadata:lessonvideo_progress:percent'] = 'A porcentagem geral calculada da aula.';
+$string['privacy:metadata:lessonvideo_progress:totalwatchtime'] = 'O tempo de visualização validado.';
+$string['privacy:metadata:lessonvideo_progress:userid'] = 'O usuário cujo progresso é armazenado.';
+$string['privacy:metadata:lessonvideo_progress:watchedsegments'] = 'Os intervalos validados do vídeo assistidos pelo usuário.';
+$string['privacy:metadata:lessonvideo_sessions'] = 'Armazena dados mínimos de sessão usados para validar o progresso de reprodução.';
 $string['privacy:path'] = 'Video Lesson';
 $string['progressreset'] = 'Progresso reiniciado.';
 $string['progresssettings'] = 'Progresso e conclusão';
@@ -159,12 +159,12 @@ $string['submitanswer'] = 'Salvar resposta';
 $string['trackingerror'] = 'Não foi possível salvar o progresso do vídeo. A reprodução continuará e o plugin tentará novamente.';
 $string['videofile'] = 'Arquivo de vídeo';
 $string['videofilerequired'] = 'Envie um arquivo de vídeo para esta aula.';
-$string['videolesson:addinstance'] = 'Adicionar uma nova Video Lesson';
-$string['videolesson:managechapters'] = 'Gerenciar capítulos e conteúdos da Video Lesson';
-$string['videolesson:resetprogress'] = 'Reiniciar progresso da Video Lesson';
-$string['videolesson:view'] = 'Visualizar Video Lesson';
-$string['videolesson:viewreport'] = 'Visualizar relatórios da Video Lesson';
-$string['videolessonname'] = 'Nome da Video Lesson';
+$string['lessonvideo:addinstance'] = 'Adicionar uma nova Video Lesson';
+$string['lessonvideo:managechapters'] = 'Gerenciar capítulos e conteúdos da Video Lesson';
+$string['lessonvideo:resetprogress'] = 'Reiniciar progresso da Video Lesson';
+$string['lessonvideo:view'] = 'Visualizar Video Lesson';
+$string['lessonvideo:viewreport'] = 'Visualizar relatórios da Video Lesson';
+$string['lessonvideoname'] = 'Nome da Video Lesson';
 $string['videosettings'] = 'Vídeo';
 $string['videosource'] = 'Fonte do vídeo';
 $string['videourl'] = 'URL do vídeo';

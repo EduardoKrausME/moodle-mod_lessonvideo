@@ -16,8 +16,8 @@
 /**
  * Player adapters and server-authoritative tracking for Video Lesson.
  *
- * @module     mod_videolesson/player
- * @package   mod_videolesson
+ * @module     mod_lessonvideo/player
+ * @package   mod_lessonvideo
  * @copyright  2026 Eduardo Kraus
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -41,7 +41,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
                 resolve();
                 return;
             }
-            var existing = document.querySelector('script[data-videolesson-src="' + src + '"]');
+            var existing = document.querySelector('script[data-lessonvideo-src="' + src + '"]');
             if (existing) {
                 var check = window.setInterval(function () {
                     if (!ready || ready()) {
@@ -62,7 +62,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
             var script = document.createElement('script');
             script.src = src;
             script.async = true;
-            script.dataset.videolessonSrc = src;
+            script.dataset.lessonvideoSrc = src;
             script.onload = function () {
                 if (!ready || ready()) {
                     resolve();
@@ -100,7 +100,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
     };
 
     var createHtml5Adapter = function () {
-        var video = document.getElementById('videolesson-html5');
+        var video = document.getElementById('lessonvideo-html5');
         if (!video) {
             return Promise.reject(new Error('HTML5 player not found'));
         }
@@ -154,7 +154,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
             return window.YT && window.YT.Player;
         }).then(function () {
             return new Promise(function (resolve) {
-                var player = new window.YT.Player('videolesson-youtube', {
+                var player = new window.YT.Player('lessonvideo-youtube', {
                     videoId: config.videoid,
                     playerVars: {rel: 0, modestbranding: 1},
                     events: {
@@ -194,7 +194,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
         return loadScript('https://player.vimeo.com/api/player.js', function () {
             return window.Vimeo && window.Vimeo.Player;
         }).then(function () {
-            var container = document.getElementById('videolesson-vimeo');
+            var container = document.getElementById('lessonvideo-vimeo');
             var player = new window.Vimeo.Player(container, {id: config.videoid, responsive: true});
             var state = 'paused';
             var immediate = null;
@@ -267,7 +267,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
                 current = chapter;
             }
         });
-        document.querySelectorAll('.videolesson-chapter-link').forEach(function (button) {
+        document.querySelectorAll('.lessonvideo-chapter-link').forEach(function (button) {
             button.classList.toggle('active', Number(button.dataset.chapterId) === Number(current.id));
         });
         document.querySelectorAll('[data-chapter-panel]').forEach(function (panel) {
@@ -276,11 +276,11 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
     };
 
     var setChapterStatus = function (chapter) {
-        var status = M.util.get_string('notstarted', 'videolesson');
+        var status = M.util.get_string('notstarted', 'lessonvideo');
         if (chapter.completed) {
-            status = M.util.get_string('completed', 'videolesson');
+            status = M.util.get_string('completed', 'lessonvideo');
         } else if (chapter.inprogress) {
-            status = M.util.get_string('inprogress', 'videolesson');
+            status = M.util.get_string('inprogress', 'lessonvideo');
         }
         var nodes = document.querySelectorAll('[data-chapter-status="' + chapter.id + '"], [data-status-for="' + chapter.id + '"]');
         nodes.forEach(function (node) {
@@ -305,13 +305,13 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
         config.chapters.forEach(function (chapter) {
             var locked = lastUnlockedMax >= 0 && Number(chapter.start) > lastUnlockedMax + 0.1;
             chapter.locked = locked;
-            var button = document.querySelector('.videolesson-chapter-link[data-chapter-id="' + chapter.id + '"]');
+            var button = document.querySelector('.lessonvideo-chapter-link[data-chapter-id="' + chapter.id + '"]');
             if (button) {
                 button.disabled = locked;
                 if (locked) {
                     var status = button.querySelector('[data-chapter-status="' + chapter.id + '"]');
                     if (status) {
-                        status.textContent = M.util.get_string('locked', 'videolesson');
+                        status.textContent = M.util.get_string('locked', 'lessonvideo');
                     }
                 }
             }
@@ -319,8 +319,8 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
     };
 
     var applyState = function (state) {
-        var overall = document.getElementById('videolesson-overall-label');
-        var bar = document.getElementById('videolesson-overall-bar');
+        var overall = document.getElementById('lessonvideo-overall-label');
+        var bar = document.getElementById('lessonvideo-overall-bar');
         if (overall) {
             overall.textContent = String(state.percent) + '%';
         }
@@ -328,7 +328,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
             bar.style.width = String(state.percentrounded) + '%';
         }
         if (state.completed) {
-            var completeMessage = document.getElementById('videolesson-complete-message');
+            var completeMessage = document.getElementById('lessonvideo-complete-message');
             if (completeMessage) {
                 completeMessage.classList.remove('d-none');
             }
@@ -371,7 +371,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
             }
             sequence++;
             var request = Ajax.call([{
-                methodname: 'mod_videolesson_update_progress',
+                methodname: 'mod_lessonvideo_update_progress',
                 args: {
                     cmid: config.cmid,
                     sessionkey: sessionkey,
@@ -400,11 +400,11 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
     };
 
     var bindChapterNavigation = function () {
-        document.querySelectorAll('.videolesson-chapter-link').forEach(function (button) {
+        document.querySelectorAll('.lessonvideo-chapter-link').forEach(function (button) {
             button.addEventListener('click', function () {
                 if (button.disabled) {
                     Notification.addNotification({
-                        message: M.util.get_string('seekblocked', 'videolesson'),
+                        message: M.util.get_string('seekblocked', 'lessonvideo'),
                         type: 'warning'
                     });
                     return;
@@ -420,7 +420,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
     };
 
     var bindContentCompletion = function () {
-        document.querySelectorAll('.videolesson-complete-item').forEach(function (button) {
+        document.querySelectorAll('.lessonvideo-complete-item').forEach(function (button) {
             button.addEventListener('click', function () {
                 var itemid = Number(button.dataset.itemId);
                 var response = '';
@@ -430,7 +430,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
                 }
                 button.disabled = true;
                 Ajax.call([{
-                    methodname: 'mod_videolesson_complete_item',
+                    methodname: 'mod_lessonvideo_complete_item',
                     args: {cmid: config.cmid, itemid: itemid, response: response}
                 }])[0].then(function (state) {
                     var badge = document.querySelector('[data-item-completed="' + itemid + '"]');
@@ -440,7 +440,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
                     button.classList.add('d-none');
                     applyState(state);
                     Notification.addNotification({
-                        message: M.util.get_string('itemcomplete', 'videolesson'),
+                        message: M.util.get_string('itemcomplete', 'lessonvideo'),
                         type: 'success'
                     });
                 }).catch(function (error) {
@@ -486,8 +486,8 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
     };
 
     var init = function () {
-        root = document.getElementById('mod-videolesson-root');
-        var configNode = document.getElementById('videolesson-config');
+        root = document.getElementById('mod-lessonvideo-root');
+        var configNode = document.getElementById('lessonvideo-config');
         if (!root || !configNode) {
             return;
         }
