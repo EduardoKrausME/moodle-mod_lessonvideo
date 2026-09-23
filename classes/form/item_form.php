@@ -69,7 +69,6 @@ class item_form extends \moodleform {
 
         $mform->addElement('filemanager', 'itemfile', get_string('itemfile', 'videolesson'), null, [
             'subdirs' => 0,
-            'maxfiles' => 1,
         ]);
         $mform->hideIf('itemfile', 'type', 'notin', ['image', 'pdf', 'file']);
 
@@ -100,6 +99,15 @@ class item_form extends \moodleform {
             $draftinfo = $draftid ? file_get_draft_area_info($draftid) : ['filecount' => 0];
             if (empty($draftinfo['filecount'])) {
                 $errors['itemfile'] = get_string('itemfilerequired', 'videolesson');
+            }
+        }
+        foreach (['itemfile'] as $field) {
+            $draftid = (int)($data[$field] ?? 0);
+            if ($draftid > 0) {
+                $draftinfo = file_get_draft_area_info($draftid);
+                if ((int)$draftinfo['filecount'] > 1) {
+                    $errors[$field] = get_string('errormaxfiles', 'videolesson');
+                }
             }
         }
         return $errors;

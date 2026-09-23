@@ -45,7 +45,7 @@ class mod_videolesson_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $this->standard_intro_elements();
 
-        $mform->addElement('header', 'videosettings', get_string('videosettings', 'videolesson'));
+        $mform->addElement('html', '<h3>' . get_string('videosettings', 'videolesson') . '</h3>');
         $mform->addElement('select', 'videosource', get_string('videosource', 'videolesson'), [
             'upload' => get_string('sourceupload', 'videolesson'),
             'url' => get_string('sourceurl', 'videolesson'),
@@ -56,7 +56,6 @@ class mod_videolesson_mod_form extends moodleform_mod {
 
         $mform->addElement('filemanager', 'videofile', get_string('videofile', 'videolesson'), null, [
             'subdirs' => 0,
-            'maxfiles' => 1,
             'accepted_types' => ['video'],
         ]);
         $mform->hideIf('videofile', 'videosource', 'neq', 'upload');
@@ -89,7 +88,7 @@ class mod_videolesson_mod_form extends moodleform_mod {
         ]);
         $mform->setDefault('maxplaybackrate', 0);
 
-        $mform->addElement('header', 'progresssettings', get_string('progresssettings', 'videolesson'));
+        $mform->addElement('html', '<h3>' . get_string('progresssettings', 'videolesson') . '</h3>');
         $mform->addElement('text', 'chapterpercent', get_string('chapterpercent', 'videolesson'), ['size' => 5]);
         $mform->setType('chapterpercent', PARAM_INT);
         $mform->setDefault('chapterpercent', 90);
@@ -144,6 +143,15 @@ class mod_videolesson_mod_form extends moodleform_mod {
         if (($data['videosource'] ?? '') === 'vimeo' &&
             !preg_match('~vimeo\\.com/(?:video/)?([0-9]+)~', (string)($data['videourl'] ?? ''))) {
             $errors['videourl'] = get_string('invalidvimeo', 'videolesson');
+        }
+        foreach (['videofile'] as $field) {
+            $draftid = (int)($data[$field] ?? 0);
+            if ($draftid > 0) {
+                $draftinfo = file_get_draft_area_info($draftid);
+                if ((int)$draftinfo['filecount'] > 1) {
+                    $errors[$field] = get_string('errormaxfiles', 'videolesson');
+                }
+            }
         }
         return $errors;
     }
