@@ -21,6 +21,7 @@ use advanced_testcase;
 /**
  * Tests timecode parsing and formatting.
  *
+ * @covers \\mod_lessonvideo\\timecode
  * @package mod_lessonvideo
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
