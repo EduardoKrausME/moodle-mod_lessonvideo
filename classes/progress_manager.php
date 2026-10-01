@@ -38,6 +38,7 @@ class progress_manager {
      */
     private const TOLERANCE = 3.0;
 
+
     /**
      * Returns or creates the user's lesson progress row.
      *
