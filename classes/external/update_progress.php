@@ -16,6 +16,7 @@
 
 namespace mod_lessonvideo\external;
 
+use context_module;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
@@ -58,15 +59,15 @@ class update_progress extends external_api {
      * @return array
      */
     public static function execute(
-        int $cmid,
+        int    $cmid,
         string $sessionkey,
-        int $sequence,
-        float $duration,
-        float $currentposition,
-        float $segmentstart,
-        float $segmentend,
-        float $playbackrate,
-        int $clienttime,
+        int    $sequence,
+        float  $duration,
+        float  $currentposition,
+        float  $segmentstart,
+        float  $segmentend,
+        float  $playbackrate,
+        int    $clienttime,
         string $playerstate
     ): array {
         global $DB, $USER;
@@ -75,7 +76,7 @@ class update_progress extends external_api {
             'playbackrate', 'clienttime', 'playerstate'
         ));
         $cm = get_coursemodule_from_id('lessonvideo', $params['cmid'], 0, false, MUST_EXIST);
-        $context = \context_module::instance($cm->id);
+        $context = context_module::instance($cm->id);
         self::validate_context($context);
         require_capability('mod/lessonvideo:view', $context);
         $activity = $DB->get_record('lessonvideo', ['id' => $cm->instance], '*', MUST_EXIST);

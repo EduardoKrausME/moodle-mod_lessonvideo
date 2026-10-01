@@ -16,6 +16,7 @@
 
 namespace mod_lessonvideo\external;
 
+use context_module;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
@@ -57,7 +58,7 @@ class complete_item extends external_api {
         global $DB, $USER;
         $params = self::validate_parameters(self::execute_parameters(), compact('cmid', 'itemid', 'response'));
         $cm = get_coursemodule_from_id('lessonvideo', $params['cmid'], 0, false, MUST_EXIST);
-        $context = \context_module::instance($cm->id);
+        $context = context_module::instance($cm->id);
         self::validate_context($context);
         require_capability('mod/lessonvideo:view', $context);
         $activity = $DB->get_record('lessonvideo', ['id' => $cm->instance], '*', MUST_EXIST);

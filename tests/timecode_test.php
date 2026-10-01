@@ -16,6 +16,8 @@
 
 namespace mod_lessonvideo;
 
+use advanced_testcase;
+
 /**
  * Tests timecode parsing and formatting.
  *
@@ -23,7 +25,7 @@ namespace mod_lessonvideo;
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class timecode_test extends \advanced_testcase {
+final class timecode_test extends advanced_testcase {
 
     /**
      * Method test_parse_supported_formats.

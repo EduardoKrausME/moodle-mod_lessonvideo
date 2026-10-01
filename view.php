@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_lessonvideo\event\course_module_viewed;
 use mod_lessonvideo\item_presenter;
 use mod_lessonvideo\player_config;
 use mod_lessonvideo\progress_manager;
@@ -47,7 +48,7 @@ $completion = new completion_info($course);
 if ($completion->is_enabled($cm)) {
     $completion->set_module_viewed($cm);
 }
-$event = \mod_lessonvideo\event\course_module_viewed::create([
+$event = course_module_viewed::create([
     'objectid' => $activity->id,
     'context' => $context,
 ]);

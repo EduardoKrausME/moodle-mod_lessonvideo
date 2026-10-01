@@ -17,6 +17,7 @@
 namespace mod_lessonvideo\form;
 
 use mod_lessonvideo\timecode;
+use moodleform;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -29,7 +30,7 @@ require_once("{$CFG->libdir}/formslib.php");
  * @copyright 2026 Eduardo Kraus {@link https://eduardokraus.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class chapter_form extends \moodleform {
+class chapter_form extends moodleform {
 
     /**
      * Method definition.

@@ -16,7 +16,9 @@
 
 namespace mod_lessonvideo;
 
+use completion_info;
 use context_module;
+use moodle_exception;
 use stdClass;
 
 /**
@@ -313,16 +315,16 @@ class progress_manager {
         $item = $DB->get_record('lessonvideo_items', ['id' => $itemid], '*', MUST_EXIST);
         $chapter = $DB->get_record('lessonvideo_chapters', ['id' => $item->chapterid], '*', MUST_EXIST);
         if ((int)$chapter->lessonvideoid !== (int)$activity->id) {
-            throw new \moodle_exception('invaliditem', 'lessonvideo');
+            throw new moodle_exception('invaliditem', 'lessonvideo');
         }
         $progress = $this->get_progress((int)$activity->id, $userid);
         $unlockedmax = $this->get_unlocked_max($activity, $userid, (float)$progress->duration);
         if ($unlockedmax !== null && (float)$chapter->starttime > $unlockedmax + 0.1) {
-            throw new \moodle_exception('chapterlocked', 'lessonvideo');
+            throw new moodle_exception('chapterlocked', 'lessonvideo');
         }
         $response = trim(clean_param($response, PARAM_TEXT));
         if ($item->type === 'question' && $response === '') {
-            throw new \moodle_exception('questionresponseempty', 'lessonvideo');
+            throw new moodle_exception('questionresponseempty', 'lessonvideo');
         }
         $record = $DB->get_record('lessonvideo_itemprogress', ['itemid' => $itemid, 'userid' => $userid]);
         $now = time();
@@ -446,7 +448,7 @@ class progress_manager {
     private function update_moodle_completion(stdClass $activity, stdClass $cm, int $userid, bool $completed): void {
         global $DB;
         $course = $DB->get_record('course', ['id' => $activity->course], '*', MUST_EXIST);
-        $completion = new \completion_info($course);
+        $completion = new completion_info($course);
         if ($completion->is_enabled($cm)) {
             $completion->update_state($cm, $completed ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE, $userid);
         }
