@@ -69,4 +69,3 @@ class custom_completion extends activity_custom_completion {
         return ['completionview', 'completionchapters', 'completionusegrade', 'completionpassgrade'];
     }
 }
-
