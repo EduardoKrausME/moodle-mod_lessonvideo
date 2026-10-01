@@ -22,8 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-global $CFG;
 defined('MOODLE_INTERNAL') || die;
+global $CFG;
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
