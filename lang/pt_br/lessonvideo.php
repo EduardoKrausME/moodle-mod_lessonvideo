@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// Este arquivo faz parte do Moodle - http://moodle.org/
+// Este arquivo faz parte do Moodle - http://moodle.org/.
 
 /**
  * Strings em português do Brasil para Video Lesson.
