@@ -29,19 +29,6 @@ playback, source handling, captions, reporting, gradebook integration, and compl
 - Moodle backup and restore.
 - Responsive student interface using Mustache and AMD.
 
-## Requirements
-
-- Moodle 4.5 or later.
-- PHP version supported by the target Moodle release.
-
-## Installation
-
-Copy the `lessonvideo` directory to:
-
-`mod/lessonvideo`
-
-Then visit **Site administration > Notifications** and complete the Moodle installation process.
-
 ## Teacher workflow
 
 1. Add a **Video Lesson** activity.
@@ -69,7 +56,3 @@ chapter locks, and seek restrictions before merging a segment into the student's
 percentages are recalculated from these validated intervals.
 
 This approach intentionally avoids trusting a percentage calculated only in JavaScript.
-
-## License
-
-GNU GPL v3 or later.
