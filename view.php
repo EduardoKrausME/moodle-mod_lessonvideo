@@ -93,10 +93,14 @@ foreach ($chapters as $chapter) {
     ];
     $locked = (float)$state['unlockedmax'] >= 0
         && (float)$chapter->starttime > (float)$state['unlockedmax'] + 0.1;
-    $items = $DB->get_records('lessonvideo_items', ['chapterid' => $chapter->id], 'sortorder ASC, id ASC');
+    // Do not send locked item content (including text, answers or file URLs) to the browser.
     $itemdata = [];
-    foreach ($items as $item) {
-        $itemdata[] = item_presenter::build($item, $context, $USER->id);
+    if (!$locked) {
+        $items = $DB->get_records('lessonvideo_items', ['chapterid' => $chapter->id],
+            'sortorder ASC, id ASC');
+        foreach ($items as $item) {
+            $itemdata[] = item_presenter::build($item, $context, $USER->id);
+        }
     }
     $status = get_string('notstarted', 'lessonvideo');
     if (!empty($chapterstate['completed'])) {
@@ -125,6 +129,8 @@ foreach ($chapters as $chapter) {
         'status' => $status,
         'items' => $itemdata,
         'hasitems' => !empty($itemdata),
+        'contentslocked' => $locked,
+        'reloadurl' => (new moodle_url('/mod/lessonvideo/view.php', ['id' => $cm->id]))->out(false),
     ];
 }
 
