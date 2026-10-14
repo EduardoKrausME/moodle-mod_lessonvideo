@@ -106,7 +106,7 @@ define(['core/ajax', 'core/notification'], function (Ajax, Notification) {
         }
         var source = video.getAttribute('src') || '';
         if (/\.m3u8(?:$|\?)/i.test(source) && !video.canPlayType('application/vnd.apple.mpegurl')) {
-            return loadScript('https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js', function () {
+            return loadScript(config.hlsurl, function () {
                 return typeof window.Hls !== 'undefined';
             }).then(function () {
                 if (window.Hls.isSupported()) {
