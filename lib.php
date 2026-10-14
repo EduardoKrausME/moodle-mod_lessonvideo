@@ -159,6 +159,15 @@ function lessonvideo_pluginfile($course, $cm, $context, string $filearea, array 
         if ((int)$chapter->lessonvideoid !== (int)$cm->instance) {
             return false;
         }
+        // A pluginfile URL is not an authorization token: recheck chapter locks for every request.
+        $activity = $DB->get_record('lessonvideo', ['id' => $cm->instance], '*', MUST_EXIST);
+        $manager = new progress_manager();
+        $progress = $manager->get_progress((int)$activity->id, (int)$GLOBALS['USER']->id);
+        $unlockedmax = $manager->get_unlocked_max($activity, (int)$GLOBALS['USER']->id,
+            (float)$progress->duration);
+        if ($unlockedmax !== null && (float)$chapter->starttime > $unlockedmax + 0.1) {
+            return false;
+        }
     }
     $filename = array_pop($args);
     $filepath = '/' . ($args ? implode('/', $args) . '/' : '');
@@ -254,12 +263,18 @@ function lessonvideo_get_completion_state($course, $cm, int $userid, bool $type)
 function lessonvideo_grade_item_update(stdClass $activity, ?array $grades = null): int {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
+    $maxgrade = (float)$activity->grade;
     $item = [
         'itemname' => $activity->name,
-        'gradetype' => ((float)$activity->grade > 0) ? GRADE_TYPE_VALUE : GRADE_TYPE_NONE,
-        'grademin' => 0,
-        'grademax' => 100,
+        'gradetype' => $maxgrade > 0 ? GRADE_TYPE_VALUE :
+            ($maxgrade < 0 ? GRADE_TYPE_SCALE : GRADE_TYPE_NONE),
     ];
+    if ($maxgrade > 0) {
+        $item['grademin'] = 0;
+        $item['grademax'] = $maxgrade;
+    } else if ($maxgrade < 0) {
+        $item['scaleid'] = (int)abs($maxgrade);
+    }
     return grade_update('mod/lessonvideo', $activity->course, 'mod', 'lessonvideo', $activity->id, 0, $grades, $item);
 }
 
@@ -279,8 +294,23 @@ function lessonvideo_update_grades(stdClass $activity, int $userid = 0, bool $nu
     }
     $records = $DB->get_records('lessonvideo_progress', $conditions);
     $grades = [];
+    $maxgrade = (float)$activity->grade;
+    $scalecount = 0;
+    if ($maxgrade < 0) {
+        $scaletext = $DB->get_field('scale', 'scale', ['id' => (int)abs($maxgrade)]);
+        $scalecount = $scaletext === false ? 0 : count(explode(',', $scaletext));
+    }
     foreach ($records as $record) {
-        $grades[$record->userid] = (object)['userid' => $record->userid, 'rawgrade' => (float)$record->percent];
+        $rawgrade = null;
+        if ($maxgrade > 0) {
+            $rawgrade = (float)$record->percent * $maxgrade / 100.0;
+        } else if ($maxgrade < 0 && $scalecount > 0 && (float)$record->percent > 0) {
+            // Moodle scale values are 1-based, with the best outcome at the highest index.
+            $rawgrade = min($scalecount, 1 + (int)round(
+                ((float)$record->percent / 100.0) * ($scalecount - 1)
+            ));
+        }
+        $grades[$record->userid] = (object)['userid' => $record->userid, 'rawgrade' => $rawgrade];
     }
     if (!$grades && $userid && $nullifnone) {
         $grades[$userid] = (object)['userid' => $userid, 'rawgrade' => null];
@@ -298,4 +328,63 @@ function lessonvideo_grade_item_delete(stdClass $activity): int {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
     return grade_update('mod/lessonvideo', $activity->course, 'mod', 'lessonvideo', $activity->id, 0, null, ['deleted' => 1]);
+}
+
+/**
+ * Adds course reset options for Video Lesson progress.
+ *
+ * @param MoodleQuickForm $mform Reset form.
+ * @return void
+ */
+function lessonvideo_reset_course_form_definition($mform): void {
+    $mform->addElement('advcheckbox', 'reset_lessonvideo_progress', get_string('resetprogress', 'lessonvideo'));
+}
+
+/**
+ * Default state for the course reset option.
+ *
+ * @param stdClass $course Course being reset.
+ * @return array
+ */
+function lessonvideo_reset_course_form_defaults($course): array {
+    return ['reset_lessonvideo_progress' => 0];
+}
+
+/**
+ * Removes progress and playback sessions for every Video Lesson in a reset course.
+ *
+ * @param stdClass $data Course reset settings.
+ * @return array Reset status entries.
+ */
+function lessonvideo_reset_userdata($data): array {
+    global $DB;
+    if (empty($data->reset_lessonvideo_progress)) {
+        return [];
+    }
+
+    $lessons = $DB->get_fieldset_select('lessonvideo', 'id', 'course = ?', [(int)$data->courseid]);
+    if ($lessons) {
+        [$insql, $inparams] = $DB->get_in_or_equal($lessons, SQL_PARAMS_NAMED, 'lesson');
+        $chapterids = $DB->get_fieldset_sql(
+            "SELECT id FROM {lessonvideo_chapters} WHERE lessonvideoid $insql", $inparams
+        );
+        if ($chapterids) {
+            [$chsql, $chparams] = $DB->get_in_or_equal($chapterids, SQL_PARAMS_NAMED, 'chapter');
+            $itemids = $DB->get_fieldset_sql(
+                "SELECT id FROM {lessonvideo_items} WHERE chapterid $chsql", $chparams
+            );
+            if ($itemids) {
+                [$isql, $iparams] = $DB->get_in_or_equal($itemids, SQL_PARAMS_NAMED, 'item');
+                $DB->delete_records_select('lessonvideo_itemprogress', "itemid $isql", $iparams);
+            }
+            $DB->delete_records_select('lessonvideo_chprogress', "chapterid $chsql", $chparams);
+        }
+        $DB->delete_records_select('lessonvideo_sessions', "lessonvideoid $insql", $inparams);
+        $DB->delete_records_select('lessonvideo_progress', "lessonvideoid $insql", $inparams);
+    }
+    return [[
+        'component' => 'mod_lessonvideo',
+        'item' => get_string('resetprogress', 'lessonvideo'),
+        'error' => false,
+    ]];
 }
