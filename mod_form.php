@@ -88,6 +88,13 @@ class mod_lessonvideo_mod_form extends moodleform_mod {
         ]);
         $mform->setDefault('maxplaybackrate', 0);
 
+        // The video length must come from the teacher, never from a browser heartbeat.
+        $mform->addElement('text', 'trustedduration', get_string('trustedduration', 'lessonvideo'),
+            ['size' => 8]);
+        $mform->setType('trustedduration', PARAM_INT);
+        $mform->addHelpButton('trustedduration', 'trustedduration', 'lessonvideo');
+        $mform->addRule('trustedduration', get_string('required'), 'required', null, 'client');
+
         $mform->addElement('html', '<h3>' . get_string('progresssettings', 'lessonvideo') . '</h3>');
         $mform->addElement('text', 'chapterpercent', get_string('chapterpercent', 'lessonvideo'), ['size' => 5]);
         $mform->setType('chapterpercent', PARAM_INT);
@@ -120,6 +127,9 @@ class mod_lessonvideo_mod_form extends moodleform_mod {
      */
     public function validation($data, $files): array {
         $errors = parent::validation($data, $files);
+        if ((int)($data['trustedduration'] ?? 0) < 1) {
+            $errors['trustedduration'] = get_string('trusteddurationinvalid', 'lessonvideo');
+        }
         foreach (['chapterpercent', 'completionpercent'] as $field) {
             if (isset($data[$field]) && ((int)$data[$field] < 1 || (int)$data[$field] > 100)) {
                 $errors[$field] = get_string('errorpercent', 'lessonvideo');
@@ -169,6 +179,9 @@ class mod_lessonvideo_mod_form extends moodleform_mod {
         if (empty($this->current->instance)) {
             return;
         }
+        $defaultvalues['trustedduration'] = (int)get_config(
+            'mod_lessonvideo', 'duration_' . (int)$this->current->instance
+        );
         foreach (['videofile', 'captions'] as $area) {
             $draftid = file_get_submitted_draft_itemid($area);
             file_prepare_draft_area($draftid, $this->context->id, 'mod_lessonvideo', $area, 0, ['subdirs' => 0]);
