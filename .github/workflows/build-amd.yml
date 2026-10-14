@@ -1,0 +1,61 @@
+name: Rebuild Moodle AMD artifacts
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - amd/src/**
+      - .github/workflows/build-amd.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lessonvideo-amd-build
+  cancel-in-progress: true
+
+jobs:
+  grunt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+        with:
+          path: plugin
+          persist-credentials: true
+
+      - name: Checkout Moodle for its Grunt toolchain
+        uses: actions/checkout@v4
+        with:
+          repository: moodle/moodle
+          ref: MOODLE_405_STABLE
+          path: moodle
+
+      - name: Install supported Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: moodle/package-lock.json
+
+      - name: Build plugin AMD sources and source map
+        run: |
+          ln -s "$GITHUB_WORKSPACE/plugin" "$GITHUB_WORKSPACE/moodle/mod/lessonvideo"
+          cd moodle
+          npm ci
+          npx grunt amd --root=mod/lessonvideo
+          test -s mod/lessonvideo/amd/build/player.min.js
+          test -s mod/lessonvideo/amd/build/player.min.js.map
+
+      - name: Commit generated artifacts if changed
+        working-directory: plugin
+        run: |
+          git add amd/build/player.min.js amd/build/player.min.js.map
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Build AMD player with Moodle Grunt"
+            git pull --rebase origin master
+            git push origin HEAD:master
+          fi
