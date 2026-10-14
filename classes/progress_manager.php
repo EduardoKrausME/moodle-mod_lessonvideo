@@ -280,9 +280,13 @@ class progress_manager {
             $overall = min(100.0,
                 ($this->intersection_length($segments, 0, (float)$progress->duration) / (float)$progress->duration) * 100.0);
         }
+        // With no required chapters, use all optional chapters; without chapters, use the video.
+        $fallbackcomplete = $chapters
+            ? !in_array(false, array_column($chapterstates, 'completed'), true)
+            : ((float)$progress->duration > 0 && $overall + 0.01 >= 100.0);
         $completed = $activity->completionmode === 'percent'
             ? $overall + 0.01 >= (float)$activity->completionpercent
-            : ($requiredcount > 0 && $allrequired);
+            : ($requiredcount > 0 ? $allrequired : $fallbackcomplete);
         $progress->percent = round($overall, 2);
         $progress->completed = $completed ? 1 : 0;
         $progress->timemodified = time();
@@ -450,8 +454,9 @@ class progress_manager {
         global $DB;
         $course = $DB->get_record('course', ['id' => $activity->course], '*', MUST_EXIST);
         $completion = new completion_info($course);
-        if ($completion->is_enabled($cm)) {
-            $completion->update_state($cm, $completed ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE, $userid);
+        // Manual completion belongs to the student. Core recomputes automatic rules for UNKNOWN.
+        if ((int)$cm->completion === COMPLETION_TRACKING_AUTOMATIC && $completion->is_enabled($cm)) {
+            $completion->update_state($cm, COMPLETION_UNKNOWN, $userid);
         }
     }
 
