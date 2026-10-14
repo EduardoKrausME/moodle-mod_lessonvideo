@@ -139,6 +139,7 @@ $config = [
     'source' => (string)$player['source'],
     'videoid' => (string)$player['videoid'],
     'url' => (string)$player['url'],
+    'hlsurl' => (new moodle_url('/mod/lessonvideo/thirdparty/hlsjs/hls.min.js'))->out(false),
     'lastposition' => (float)$progress->lastposition,
     'resumeplayback' => !empty($activity->resumeplayback),
     'allowseek' => !empty($activity->allowseek),
