@@ -51,7 +51,10 @@ class restore_lessonvideo_activity_task extends restore_activity_task {
      * @return array
      */
     public static function define_decode_contents(): array {
-        return [new restore_decode_content('lessonvideo', ['intro'], 'lessonvideo')];
+        return [
+            new restore_decode_content('lessonvideo', ['intro'], 'lessonvideo'),
+            new restore_decode_content('lessonvideo_items', ['content', 'url'], 'lessonvideo_item'),
+        ];
     }
 
     /**
