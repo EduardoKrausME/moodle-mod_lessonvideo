@@ -52,9 +52,12 @@ function lessonvideo_supports(string $feature) {
  */
 function lessonvideo_add_instance(stdClass $data, $mform = null): int {
     global $DB;
+    $trustedduration = max(0, (int)($data->trustedduration ?? 0));
+    unset($data->trustedduration);
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
     $data->id = $DB->insert_record('lessonvideo', $data);
+    set_config('duration_' . $data->id, $trustedduration, 'mod_lessonvideo');
     $context = context_module::instance((int)$data->coursemodule);
     lessonvideo_save_activity_files($data, $context);
     lessonvideo_grade_item_update($data);
@@ -71,8 +74,27 @@ function lessonvideo_add_instance(stdClass $data, $mform = null): int {
 function lessonvideo_update_instance(stdClass $data, $mform = null): bool {
     global $DB;
     $data->id = $data->instance;
+    $oldtrusted = (int)get_config('mod_lessonvideo', 'duration_' . $data->id);
+    $trustedduration = max(0, (int)($data->trustedduration ?? $oldtrusted));
+    unset($data->trustedduration);
     $data->timemodified = time();
     $DB->update_record('lessonvideo', $data);
+    if ($trustedduration !== $oldtrusted) {
+        // Old segments cannot be trusted under a new length (including legacy browser lengths).
+        $oldprogress = $DB->get_records('lessonvideo_progress', ['lessonvideoid' => $data->id]);
+        $clearedgrades = [];
+        foreach ($oldprogress as $progress) {
+            $clearedgrades[(int)$progress->userid] = (object)[
+                'userid' => (int)$progress->userid,
+                'rawgrade' => null,
+            ];
+        }
+        lessonvideo_delete_instance_progress((int)$data->id);
+        if ($clearedgrades) {
+            lessonvideo_grade_item_update($data, $clearedgrades);
+        }
+    }
+    set_config('duration_' . $data->id, $trustedduration, 'mod_lessonvideo');
     $context = context_module::instance((int)$data->coursemodule);
     lessonvideo_save_activity_files($data, $context);
     lessonvideo_grade_item_update($data);
@@ -122,6 +144,7 @@ function lessonvideo_delete_instance(int $id): bool {
     $DB->delete_records('lessonvideo_progress', ['lessonvideoid' => $id]);
     $DB->delete_records('lessonvideo_sessions', ['lessonvideoid' => $id]);
     $DB->delete_records('lessonvideo', ['id' => $id]);
+    unset_config('duration_' . $id, 'mod_lessonvideo');
     lessonvideo_grade_item_delete($activity);
     return true;
 }
@@ -387,4 +410,26 @@ function lessonvideo_reset_userdata($data): array {
         'item' => get_string('resetprogress', 'lessonvideo'),
         'error' => false,
     ]];
+}
+
+/**
+ * Deletes every learner's progress for one lesson while retaining chapters and item definitions.
+ *
+ * @param int $lessonid Lesson id.
+ * @return void
+ */
+function lessonvideo_delete_instance_progress(int $lessonid): void {
+    global $DB;
+    $chapterids = $DB->get_fieldset_select('lessonvideo_chapters', 'id', 'lessonvideoid = ?', [$lessonid]);
+    if ($chapterids) {
+        [$chsql, $chparams] = $DB->get_in_or_equal($chapterids, SQL_PARAMS_NAMED, 'chapter');
+        $itemids = $DB->get_fieldset_sql("SELECT id FROM {lessonvideo_items} WHERE chapterid $chsql", $chparams);
+        if ($itemids) {
+            [$isql, $iparams] = $DB->get_in_or_equal($itemids, SQL_PARAMS_NAMED, 'item');
+            $DB->delete_records_select('lessonvideo_itemprogress', "itemid $isql", $iparams);
+        }
+        $DB->delete_records_select('lessonvideo_chprogress', "chapterid $chsql", $chparams);
+    }
+    $DB->delete_records('lessonvideo_sessions', ['lessonvideoid' => $lessonid]);
+    $DB->delete_records('lessonvideo_progress', ['lessonvideoid' => $lessonid]);
 }
