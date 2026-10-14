@@ -39,12 +39,16 @@ jobs:
 
       - name: Build plugin AMD sources and source map
         run: |
-          ln -s "$GITHUB_WORKSPACE/plugin" "$GITHUB_WORKSPACE/moodle/mod/lessonvideo"
+          # Copy inside Moodle so ESLint finds Moodle's ES-module parser settings.
+          mkdir -p moodle/mod/lessonvideo
+          cp -a plugin/. moodle/mod/lessonvideo/
+          rm -rf moodle/mod/lessonvideo/.git
           cd moodle
           npm ci
           npx grunt amd --root=mod/lessonvideo
           test -s mod/lessonvideo/amd/build/player.min.js
           test -s mod/lessonvideo/amd/build/player.min.js.map
+          cp mod/lessonvideo/amd/build/player.min.js* ../plugin/amd/build/
 
       - name: Commit generated artifacts if changed
         working-directory: plugin
