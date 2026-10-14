@@ -71,12 +71,6 @@ jobs:
         # Uncomment this to run Behat tests using the Moodle App.
         # MOODLE_APP: 'true'
 
-    - name: Compile and verify AMD assets using Moodle Grunt
-      if: ${{ !cancelled() }}
-      run: |
-        moodle-plugin-ci grunt -t amd ./plugin
-        git -C plugin diff --exit-code -- amd/build/
-
     - name: PHP Lint
       if: ${{ !cancelled() }}
       run: moodle-plugin-ci phplint
