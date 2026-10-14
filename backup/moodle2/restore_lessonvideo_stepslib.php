@@ -55,10 +55,13 @@ class restore_lessonvideo_activity_structure_step extends restore_activity_struc
         global $DB;
         $data = (object)$data;
         $oldid = $data->id;
+        $trustedduration = max(0, (int)($data->trustedduration ?? 0));
+        unset($data->trustedduration);
         $data->course = $this->get_courseid();
         $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $newid = $DB->insert_record('lessonvideo', $data);
+        set_config('duration_' . $newid, $trustedduration, 'mod_lessonvideo');
         $this->apply_activity_instance($newid);
         $this->set_mapping('lessonvideo', $oldid, $newid, true);
     }
