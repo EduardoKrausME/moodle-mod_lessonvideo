@@ -79,7 +79,9 @@ class progress_manager {
     public function update(stdClass $activity, stdClass $cm, int $userid, array $data): array {
         global $DB;
         $now = time();
-        $duration = max(0.0, (float)$data['duration']);
+        // The browser's reported duration is metadata, never an authority for grades or completion.
+        $clientduration = max(0.0, (float)$data['duration']);
+        $duration = max(0.0, (float)get_config('mod_lessonvideo', 'duration_' . $activity->id));
         $position = max(0.0, min($duration ?: PHP_FLOAT_MAX, (float)$data['currentposition']));
         $start = max(0.0, (float)$data['segmentstart']);
         $end = max($start, (float)$data['segmentend']);
@@ -92,6 +94,14 @@ class progress_manager {
         }
 
         $progress = $this->get_progress((int)$activity->id, $userid);
+        if ($duration < 1 || abs($clientduration - $duration) > max(5.0, $duration * 0.02)) {
+            // Without a teacher-set duration, or with contradictory metadata, credit no watch time.
+            $state = $this->recalculate($activity, $userid, $progress);
+            $state['seekto'] = (float)$progress->lastposition;
+            $state['accepted'] = false;
+            $state['watchtime'] = 0.0;
+            return $state;
+        }
         $session = $DB->get_record('lessonvideo_sessions', [
             'lessonvideoid' => $activity->id,
             'userid' => $userid,
@@ -230,9 +240,12 @@ class progress_manager {
     public function recalculate(stdClass $activity, int $userid, ?stdClass $progress = null): array {
         global $DB;
         $progress = $progress ?? $this->get_progress((int)$activity->id, $userid);
+        $trustedduration = max(0.0, (float)get_config('mod_lessonvideo', 'duration_' . $activity->id));
+        $progress->duration = $trustedduration;
         $chapters = array_values($DB->get_records('lessonvideo_chapters',
             ['lessonvideoid' => $activity->id], 'starttime ASC, sortorder ASC, id ASC'));
-        $segments = $this->decode_segments($progress->watchedsegments);
+        // Legacy browser-supplied segments must not award credit until the teacher defines the length.
+        $segments = $trustedduration > 0 ? $this->decode_segments($progress->watchedsegments) : [];
         $chapterstates = [];
         $weightedwatched = 0.0;
         $weightedtotal = 0.0;
