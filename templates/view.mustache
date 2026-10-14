@@ -107,6 +107,12 @@
                                     <div class="alert alert-warning">{{#str}}
                                         requiredcontentpending, lessonvideo{{/str}}</div>{{/itemscomplete}}
 
+                                {{#contentslocked}}
+                                    <div class="alert alert-info">
+                                        {{#str}}lockedcontentreload, lessonvideo{{/str}}
+                                        <a href="{{{reloadurl}}}">{{#str}}reloadcontent, lessonvideo{{/str}}</a>
+                                    </div>
+                                {{/contentslocked}}
                                 {{#hasitems}}
                                     <h3 class="h5">{{#str}}chaptercontents, lessonvideo{{/str}}</h3>
                                     <div class="lessonvideo-items">
