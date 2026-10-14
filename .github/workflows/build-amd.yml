@@ -35,7 +35,7 @@ jobs:
       - name: Install supported Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Build plugin AMD sources and source map
         run: |
