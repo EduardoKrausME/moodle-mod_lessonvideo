@@ -17,7 +17,6 @@
  * Player adapters and server-authoritative tracking for Video Lesson.
  *
  * @module     mod_lessonvideo/player
- * @package   mod_lessonvideo
  * @copyright  2026 Eduardo Kraus
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -464,7 +463,7 @@ let startTracking = function () {
             });
         }
         return snapshot;
-    }).then(function (snapshot) {
+    }).then(function () {
         previous = {
             time: config.resumeplayback ? Math.max(0, Number(config.lastposition) || 0) : 0,
             state: 'paused'
