@@ -33,7 +33,7 @@ class backup_lessonvideo_activity_structure_step extends backup_activity_structu
         $lesson = new backup_nested_element('lessonvideo', ['id'], [
             'course', 'name', 'intro', 'introformat', 'videosource', 'videourl', 'resumeplayback', 'allowseek',
             'maxplaybackrate', 'chapterpercent', 'completionmode', 'completionchapters', 'completionpercent', 'grade',
-            'timecreated', 'timemodified',
+            'timecreated', 'timemodified', 'trustedduration',
         ]);
         $chapters = new backup_nested_element('chapters');
         $chapter = new backup_nested_element('chapter', ['id'], [
@@ -68,7 +68,18 @@ class backup_lessonvideo_activity_structure_step extends backup_activity_structu
         $item->add_child($itemprogresses);
         $itemprogresses->add_child($itemprogress);
 
-        $lesson->set_source_table('lessonvideo', ['id' => backup::VAR_ACTIVITYID]);
+        global $DB;
+        // The authoritative length is kept in per-instance config for schema compatibility.
+        // Include it explicitly so course copies and restores preserve progress validation.
+        $durationkey = $DB->sql_concat("'duration_'", 'lesson.id');
+        $lesson->set_source_sql(
+            "SELECT lesson.*, cfg.value AS trustedduration
+               FROM {lessonvideo} lesson
+          LEFT JOIN {config_plugins} cfg
+                 ON cfg.plugin = :plugin AND cfg.name = $durationkey
+              WHERE lesson.id = :lessonid",
+            ['plugin' => 'mod_lessonvideo', 'lessonid' => backup::VAR_ACTIVITYID]
+        );
         $chapter->set_source_table('lessonvideo_chapters', ['lessonvideoid' => backup::VAR_PARENTID]);
         $item->set_source_table('lessonvideo_items', ['chapterid' => backup::VAR_PARENTID]);
         if ($userinfo) {
