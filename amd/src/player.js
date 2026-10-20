@@ -17,6 +17,7 @@
  * Player adapters and server-authoritative tracking for Video Lesson.
  *
  * @module     mod_lessonvideo/player
+ * @package   mod_lessonvideo
  * @copyright  2026 Eduardo Kraus
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
